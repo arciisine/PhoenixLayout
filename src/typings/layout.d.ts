@@ -24,15 +24,19 @@ declare interface ScreenLayoutExternal {
 }
 
 declare interface Classification {
+  id         : string,
+  target     : string,
   app?       : RegExp, 
   window?    : RegExp, 
-  windowNot? : RegExp
+  windowNot? : RegExp,
+  tile?      : {x?:boolean, y?:boolean}
 }
 
 declare interface ClassificationExternal {
   app?       : RegExp|string, 
   window?    : RegExp|string, 
-  windowNot? : RegExp|string
+  windowNot? : RegExp|string,
+  tile?      : {x?:boolean, y?:boolean}
 }
 
 declare interface Monitor {

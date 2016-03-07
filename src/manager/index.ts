@@ -2,6 +2,8 @@ import ScreenManager from './screen';
 import ClassificationManager from './classification';
 import LayoutManager from './layout';
 
+type ClassifiedAssign = {cls:Classification, windows:Window[]};
+
 export default class Manager {
   screens:ScreenManager
   classes:ClassificationManager
@@ -20,18 +22,18 @@ export default class Manager {
     //this.handlers.push(Phoenix.on('windowDidOpen', w => this.windowAdded(w)));
     //this.handlers.push(Phoenix.on('windowDidUnminimize', w => this.windowAdded(w)));
     this.handlers.push(Phoenix.on("screensDidChange", () => this.screensChanged()));
-    this.keyHandlers.push(Phoenix.bind("a", ['cmd', 'shift'], () => this.layoutAll()))
+    this.keyHandlers.push(Phoenix.bind("a", ['cmd', 'shift'], () => this.layout()))
     
-    this.layoutAll();
+    this.layout();
   }
   
   windowAdded(w:Window) {
-    this.layout(w);
+    this.layout();
   }
   
   screensChanged() {
     Phoenix.notify(`Screens changed`);
-    this.layoutAll();
+    this.layout();
   }
   
   sync() {
@@ -47,18 +49,26 @@ export default class Manager {
     }
   }
   
-  layoutAll() {
+  layout() {
     this.sync();
-    Window.visibleWindows().forEach(w => this.layout(w));
-  }
-  
-  layout(w:Window) {
-    let cls = this.classes.classify(w);
+    let mapping:Named<Named<ClassifiedAssign>> = {}
     
-    if (cls) {
-      this.layouts.activeLayout.forEach(layout => {
-        layout.layout(cls, [w]);
+    Window.visibleWindows().forEach(w => {
+      let cls = this.classes.classify(w);
+      let app = w.app().name();
+      if (cls) {
+        mapping[cls.target] = mapping[cls.target] || {};
+        mapping[cls.target][cls.id] = mapping[cls.target][cls.id] || { cls : cls, windows : [] };
+        mapping[cls.target][cls.id].windows.push(w);
+      }
+    });
+    
+    Object.forEach(mapping, (byTarget:Named<ClassifiedAssign>, target) => {
+      Object.forEach(byTarget, (assign:ClassifiedAssign, id) => {
+        this.layouts.activeLayout.forEach(layout => {
+          layout.layout(assign.cls.target, assign.cls, assign.windows);
+        });
       })
-    }
+    })
   }
 }

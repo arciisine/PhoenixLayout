@@ -33,13 +33,23 @@ export default class ScreenLayout {
     }
   }
   
-  layout(cls:string, windows:Window[]) {
+  layout(cls:string, clsObj:Classification, windows:Window[]) {
     let fr = this.screen.visibleFrameInRectangle();
     let dx = fr.width / this.units.width;
     let dy = fr.height / this.units.height;
     let ox = fr.x
     let oy = fr.y
-        
+    
+    if (clsObj.tile) {
+      let count = windows.length;
+      if (clsObj.tile.x) {
+        dx = dx / count;
+      } else if (clsObj.tile.y) {
+        dy = dy / count;        
+      }
+    }
+    
+    
     let cell = this.cells[cls];
     if (!cell) return; // DO nothing if it doesn't match
 
@@ -50,7 +60,16 @@ export default class ScreenLayout {
         width  : cell.width * dx - this.padding * 2,  
         height : cell.height * dy - this.padding * 2 
       }
+      
       window.setFrame(dims);
+      
+      if (clsObj.tile) {
+        if (clsObj.tile.x) {
+          ox = dims.x + dims.width + this.padding * 2;
+        } else if (clsObj.tile.y) {
+          oy = dims.y + dims.height + this.padding * 2;
+        }
+      }
     });
   }
 }

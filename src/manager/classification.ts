@@ -1,29 +1,35 @@
 /// <reference path="../typings/layout.d.ts" />
 
 export default class ClassificationManager {
-  static parse(config:ClassificationExternal[]):Classification[] {
+  static id:number = 0;
+  static parse(target:string, config:ClassificationExternal[]):Classification[] {
     let toRegExp = (o) => o instanceof RegExp ? o : new RegExp('^'+o+'.*$', 'i')
   
     return config.map(x => {
+      let o:Classification = { id : `${++ClassificationManager.id}`, target };
       if (typeof x === 'string') {
-        return { app : toRegExp(x) };
-      } else {
-        let out:Classification = {};
+        o.app = toRegExp(x);
+      } else {        
         ['app','window','windowNot'].forEach(p => {
-          if (x[p]) out[p] = toRegExp(x[p]);             
+          if (x[p]) o[p] = toRegExp(x[p]);             
         })
-        return out;
       }
+      return o;
     })
   }
 
   classes:Named<Classification[]>
+  classesMap:Named<Classification>
   
   constructor(classes:Named<ClassificationExternal[]>) {
-    this.classes = Object.map(classes, x => ClassificationManager.parse(x));
+    this.classesMap = {};
+    this.classes = Object.map(classes, (x,target) => ClassificationManager.parse(target, x));
+    Object.forEach(this.classes, (cls:Classification[], name) => {
+      cls.map(c => this.classesMap[c.id] = c)
+    })
   }
   
-  classify(w:Window):string {
+  classify(w:Window):Classification {
     let app = w.app().name();
     let window = w.title();
       
@@ -36,7 +42,7 @@ export default class ClassificationManager {
       });
       
       if (found) {      
-        return k;
+        return found;
       }
     }
   }
