@@ -10,7 +10,7 @@ let config:Configuration = {
     notes      : ['Notes'],
     textEditor : [{app:/^Code.*$/}, 'Sublime Text'],
     ide        : ['Intellij'],
-    chat       : ['HipChat', { app : 'Google Chrome', window : 'Hangouts' }],
+    chat       : ['HipChat'], /*{ app : 'Google Chrome', window : 'Hangouts' }],*/
     email      : [ {app : 'Google Chrome', window:/^.*(tim@eaiti.com|timothy.soehnlin@gmail.com).*$/}],
   },
   layouts : {
@@ -23,7 +23,7 @@ let config:Configuration = {
          aabbbccc
          dddddccc`,
         aliases : {
-          a : ['browser'],
+          a : ['browser', 'chat'],
           b : ['ide'],
           c : ['textEditor'],
           d : ['terminal']         
@@ -34,7 +34,7 @@ let config:Configuration = {
         format  : `eef`,
         aliases : {
           e : ['email'],
-          f : ['chat', 'notes']
+          f : ['notes']
         }
       }
     },
