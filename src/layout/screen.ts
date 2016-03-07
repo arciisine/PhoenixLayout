@@ -33,41 +33,46 @@ export default class ScreenLayout {
     }
   }
   
-  layout(cls:string, clsObj:Classification, windows:Window[]) {
+  layout(cls:Classification, windows:Window[]) {
     let fr = this.screen.visibleFrameInRectangle();
     let dx = fr.width / this.units.width;
     let dy = fr.height / this.units.height;
     let ox = fr.x
     let oy = fr.y
+    let px = this.padding;
+    let py = this.padding;
     
-    if (clsObj.tile) {
+    if (windows.length > 1  && cls.tile) {
       let count = windows.length;
-      if (clsObj.tile.x) {
+      windows.sort((a,b) => a.title().localeCompare(b.title()))
+      if (cls.tile.x) {
         dx = dx / count;
-      } else if (clsObj.tile.y) {
+        px = px / count;
+      } else if (cls.tile.y) {
         dy = dy / count;        
+        py = py / count;
       }
     }
     
     
-    let cell = this.cells[cls];
+    let cell = this.cells[cls.target];
     if (!cell) return; // DO nothing if it doesn't match
 
     windows.forEach(window => {        
       let dims = { 
-        x      : ox + (cell.x * dx) + this.padding, 
-        y      : oy + (cell.y * dy) + this.padding, 
-        width  : cell.width * dx - this.padding * 2,  
-        height : cell.height * dy - this.padding * 2 
+        x      : ox + (cell.x * dx) + px, 
+        y      : oy + (cell.y * dy) + py ,
+        width  : cell.width * dx - px * 2,  
+        height : cell.height * dy - py * 2 
       }
       
       window.setFrame(dims);
       
-      if (clsObj.tile) {
-        if (clsObj.tile.x) {
-          ox = dims.x + dims.width + this.padding * 2;
-        } else if (clsObj.tile.y) {
-          oy = dims.y + dims.height + this.padding * 2;
+      if (windows.length > 1 && cls.tile) {
+        if (cls.tile.x) {
+          ox = dims.x + dims.width + px * 2;
+        } else if (cls.tile.y) {
+          oy = dims.y + dims.height + py * 2;
         }
       }
     });

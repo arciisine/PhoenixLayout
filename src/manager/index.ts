@@ -66,7 +66,7 @@ export default class Manager {
     Object.forEach(mapping, (byTarget:Named<ClassifiedAssign>, target) => {
       Object.forEach(byTarget, (assign:ClassifiedAssign, id) => {
         this.layouts.activeLayout.forEach(layout => {
-          layout.layout(assign.cls.target, assign.cls, assign.windows);
+          layout.layout(assign.cls, assign.windows);
         });
       })
     })

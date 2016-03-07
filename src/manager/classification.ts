@@ -2,17 +2,22 @@
 
 export default class ClassificationManager {
   static id:number = 0;
+  static toRegExp(o):RegExp {
+    return o instanceof RegExp ? o : new RegExp('^'+o+'.*$', 'i')
+  } 
   static parse(target:string, config:ClassificationExternal[]):Classification[] {
-    let toRegExp = (o) => o instanceof RegExp ? o : new RegExp('^'+o+'.*$', 'i')
   
     return config.map(x => {
       let o:Classification = { id : `${++ClassificationManager.id}`, target };
       if (typeof x === 'string') {
-        o.app = toRegExp(x);
+        o.app = ClassificationManager.toRegExp(x);
       } else {        
         ['app','window','windowNot'].forEach(p => {
-          if (x[p]) o[p] = toRegExp(x[p]);             
-        })
+          if (x[p]) o[p] = ClassificationManager.toRegExp(x[p]);             
+        });
+        ['tile'].forEach(p => {
+          if (x[p]) o[p] = x[p];
+        });
       }
       return o;
     })

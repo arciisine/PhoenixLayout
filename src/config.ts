@@ -6,7 +6,7 @@ let config:Configuration = {
   },
   classes : {
     browser    : [ {app : 'Google Chrome', windowNot:/^.*(tim@eaiti.com|timothy.soehnlin@gmail.com|Hangouts).*$/}, 'Safari', 'Firefox'],
-    terminal   : [{app:'iTerm2', tile:true}],
+    terminal   : [{app:'iTerm2', tile:{x:true}}],
     notes      : ['Notes'],
     textEditor : [{app:/^Code.*$/}, 'Sublime Text'],
     ide        : ['Intellij'],
