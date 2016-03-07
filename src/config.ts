@@ -35,9 +35,9 @@ let config:Configuration = {
       laptop: {
         padding: 3,
         format  : 
-          `xxxy
-           xxxy
-           xxxz`,
+          `xxxxxyy
+           xxxxxyy
+           xxxxxzz`,
         aliases : {
           x : ['email'],
           y : ['notes'],
