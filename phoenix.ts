@@ -1,10 +1,18 @@
 /// <reference path="./phoenix.d.ts" />
-/// <reference path="./node_modules/typescript/lib/lib.core.es6.d.ts" />
+
 type Cell = string;
+type Named<T> = {[screen:string]:T}
 
-type LayoutConfig = {format:string, aliases:{[key:string]:string[]}}
-
+type ScreenLayoutConfig = {format:string, aliases:Named<string[]>}
 type Classification = {app?:RegExp, window?:RegExp, windowNot?:RegExp}
+type ClassificationExternal = {app?:RegExp|string, window?:RegExp|string, windowNot?:RegExp|string}
+type Monitor = { size:string, name?:string };
+
+type Configuration =  {
+  screens : Named<Monitor>,
+  classes : Named<ClassificationExternal[]>,
+  layouts : Named<Named<ScreenLayoutConfig>>
+}
 
 function message(msg) {
   let m = new Modal();
@@ -17,39 +25,39 @@ function toRegExp(o) {
   return o instanceof RegExp ? o : new RegExp('.*'+o+'.*')
 }
 
-function layoutParser(layouts:[string, {[name:string]:LayoutConfig}][]) {
-  return layouts.map(p => {
-    let screens:{[key:string]:ScreenLayout} = {};
-    for (var k in p[1]) {
-      screens[k] = new ScreenLayout(p[1][k]);
-    }      
-    return new DesktopLayout(p[0], screens);
-  })
+function screenParse(name:string, config:Monitor) {
+  config.name = name;
+  return config;
 }
 
-function classesParser(classes:{[key:string]:({app?:string|RegExp, window?:string|RegExp, windowNot?:string|RegExp}|string)[]}) {
-  let out:{[key:string]:Classification[]} = {};
-  for (var k in classes) {
-    out[k] = classes[k].map(x => {
-      if (typeof x === 'string') {
-        return { app : toRegExp(x) };
-      } else {
-        let out:Classification = {};
-        ['app','window','windowNot'].forEach(p => {
-          if (x[p]) out[p] = toRegExp(x[p]);             
-        })
-        return out;
-      }
-    })
-  }
+function layoutParse(name:string, config:Named<ScreenLayoutConfig>):DesktopLayout {  
+  let screens:Named<ScreenLayout> = _.mapObject(config, (conf, name) => {
+    return new ScreenLayout(conf);
+  });
+  let out = new DesktopLayout(screens);
+  out.name = name;
   return out;
+}
+
+function classesParse(name:string, config:ClassificationExternal[]):Classification[] {
+  return config.map(x => {
+    if (typeof x === 'string') {
+      return { app : toRegExp(x) };
+    } else {
+      let out:Classification = {};
+      ['app','window','windowNot'].forEach(p => {
+        if (x[p]) out[p] = toRegExp(x[p]);             
+      })
+      return out;
+    }
+  })
 }
 
 class ScreenLayout {
   units:Size
   cells:{[cell:string]:Rectangle&{r:number,c:number}}
 
-  constructor(cfg:LayoutConfig) {
+  constructor(cfg:ScreenLayoutConfig) {
     let items = cfg.format.trim().split('\n').map(x => x.trim().split(''));
     this.units = {width:items[0].length, height: items.length }
     this.cells = {};
@@ -74,20 +82,25 @@ class ScreenLayout {
     }
   }
   
-  layout(screen:Screen, windows:{[key:string]:Window[]}) {
-    let dx = screen.visibleFrameInRectangle().width / this.units.width;
-    let dy = screen.visibleFrameInRectangle().height / this.units.height;
+  layout(screen:Screen, windows:Named<Window[]>) {
+    let fr = screen.visibleFrameInRectangle();
+    let dx = fr.width / this.units.width;
+    let dy = fr.height / this.units.height;
+    let ox = fr.x
+    let oy = fr.y
+        
     Object.keys(windows).forEach(cls => {
       let cell = this.cells[cls];
       if (!cell) return; // DO nothing if it doesn't match
 
       windows[cls].forEach(window => {        
         let dims = { 
-          x      : cell.x * dx, 
-          y      : cell.y * dy, 
+          x      : ox + (cell.x * dx), 
+          y      : oy + (cell.y * dy), 
           width  : cell.width * dx, 
           height : cell.height * dy  
         }
+        Phoenix.notify(`Positioning: ${JSON.stringify(dims)}: ${window.app().name} - ${window.title()}`)
         window.setFrame(dims);
       });
     });
@@ -95,21 +108,29 @@ class ScreenLayout {
 }
 
 class DesktopLayout {
-  constructor(public name:string, public layouts:{[display:string]:ScreenLayout}) {}
+  name:string;
+  
+  constructor(public layouts:{[display:string]:ScreenLayout}) {}
 }
 
 class DesktopLayoutManager {
-  static SCREENS = {
-    '1680x1050' : ['laptop'], 
-    '3050x2000' : ['vizio'],
-    '1920x1080' : ['tv'] 
-  }
-  
-  activeScreens:{[name:string]:Screen};
+  activeScreens:Named<Screen>;
   activeLayout:DesktopLayout;
-  activeWindows:{[cls:string]:Window[]} = {};
+  activeWindows:Named<Window[]> = {};
+  
+  screens:Named<Monitor> = {};
+  layouts:Named<DesktopLayout> = {};
+  classes:Named<Classification[]> = {}
 
-  constructor(public layouts:DesktopLayout[], public classes:{[key:string]:Classification[]}) {}
+  private changeHandler:EventHandler;
+
+  constructor(config:Configuration) {
+    this.screens = _.mapObject(config.screens, (m,name) => screenParse(name, m));   
+    this.layouts = _.mapObject(config.layouts, (l,name) => layoutParse(name, l));
+    this.classes = _.mapObject(config.classes, (c,name) => classesParse(name, c));    
+    this.changeHandler = Phoenix.on("screensDidChange", () => this.readState());
+    this.readState();
+  }
   
   layout() {
     for (var k in this.activeLayout.layouts) {
@@ -156,26 +177,28 @@ class DesktopLayoutManager {
   }
   
   readScreenState() {
-    let screens:{[key:string]:string[]} = {};
-    for (var k in DesktopLayoutManager.SCREENS) {
-      screens[k] = DesktopLayoutManager.SCREENS[k].slice(0);
-    }
+    let screens:Monitor[] = _.values(this.screens);
     
     this.activeScreens = {};
-
-    
+   
     Screen.screens().forEach(sc => {
       let rect = sc.frameInRectangle()
       let key = `${rect.width}x${rect.height}`;
-      this.activeScreens[screens[key].shift()] = sc;
+      let res = screens.findIndex(x => x.size === key);
+      if (res >= 0) {
+        let monitor = screens.splice(res, 1)[0];
+        this.activeScreens[monitor.name] = sc;
+      }      
     });
   }
  
   determineActiveLayout() {
      this.activeLayout = null;
     
-    for (let i = 0; i < this.layouts.length; i++) {
-      let lo = this.layouts[i];
+    let layouts = _.values(this.layouts);
+    
+    for (let i = 0; i < layouts.length; i++) {
+      let lo = layouts[i];
       let scKeys = Object.keys(this.activeScreens);
       let loKeys = Object.keys(lo.layouts);
       let count = scKeys.length;
@@ -207,42 +230,54 @@ class DesktopLayoutManager {
 }
 
 ////////////////////////////////////////////
-let applicationClasses:{[key:string]:({app?:string|RegExp, window?:string|RegExp, windowNot?:string|RegExp}|string)[]} = {
-  browser    : [ {app : 'Google Chrome', windowNot:/^.*(tim@eaiti.com|timothy.soehnlin@gmail.com|Hangouts).*$/}, 'Safari', 'Firefox'],
-  terminal   : ['iTerm2'],
-  notes      : ['Notes'],
-  textEditor : [{app:/^Code.*$/}, 'Sublime Text'],
-  ide        : [{app:/^Intellij.*$/}],
-  chat       : ['HipChat', { app : 'Google Chrome', window : 'Hangouts' }],
-  email      : [ {app : 'Google Chrome', window:/^.*(tim@eaiti.com|timothy.soehnlin@gmail.com).*$/}],
-}
-
-let layouts:[string, {[name:string]:LayoutConfig}][] = [
-  ['home', {    
-    vizio : {
-      format :
-      `aabbcc
-       aabbcc
-       aabbcc
-       ddddcc`,
-       aliases : {}
+let config:Configuration = {
+  screens : {
+    laptop : {size:'1680x1050'}, 
+    vizio  : {size:'3200x1800'},
+    tv     : {size:'1920x1080'} 
+  },
+  classes : {
+    browser    : [ {app : 'Google Chrome', windowNot:/^.*(tim@eaiti.com|timothy.soehnlin@gmail.com|Hangouts).*$/}, 'Safari', 'Firefox'],
+    terminal   : ['iTerm2'],
+    notes      : ['Notes'],
+    textEditor : [{app:/^Code.*$/}, 'Sublime Text'],
+    ide        : [{app:/^Intellij.*$/}],
+    chat       : ['HipChat', { app : 'Google Chrome', window : 'Hangouts' }],
+    email      : [ {app : 'Google Chrome', window:/^.*(tim@eaiti.com|timothy.soehnlin@gmail.com).*$/}],
+  },
+  layouts : {
+    home: {    
+      vizio : {
+        format :
+        `aabbcc
+        aabbcc
+        aabbcc
+        ddddcc`,
+        aliases : {
+          a : ['browser'],
+          b : ['ide'],
+          c : ['textEditor'],
+          d : ['terminal']         
+        }
+      },
+      laptop: {
+        format  : `eef`,
+        aliases : {
+          e : ['email'],
+          f : ['chat', 'notes']
+        }
+      }
     },
-    laptop: {
-      format  : `eef`,
-      aliases : {}
-    }
-  }],
-  ['alone', {
-    laptop: { 
-      format  : `aab`,
-      aliases : {
-        a : ['browser', 'textEditor', 'ide', 'email'],
-        b : ['notes', 'terminal', 'chat']
+    alone: {
+      laptop: { 
+        format  : `aab`,
+        aliases : {
+          a : ['browser', 'textEditor', 'ide', 'email'],
+          b : ['notes', 'terminal', 'chat']
+        }
       }
     }
-  }]
-]
-
-let dlm = new DesktopLayoutManager(layoutParser(layouts), classesParser(applicationClasses));
-
-dlm.readState()
+  }
+}
+  
+let dlm = new DesktopLayoutManager(config);
