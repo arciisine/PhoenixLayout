@@ -23,10 +23,6 @@ function message(msg) {
   m.show()
 }
 
-function toRegExp(o) {
-  return o instanceof RegExp ? o : new RegExp('.*'+o+'.*')
-}
-
 function screenParse(name:string, config:Monitor) {
   config.name = name;
   return config;
@@ -42,6 +38,8 @@ function layoutParse(name:string, config:Named<ScreenLayoutConfig>):DesktopLayou
 }
 
 function classesParse(name:string, config:ClassificationExternal[]):Classification[] {
+  let toRegExp = (o) => o instanceof RegExp ? o : new RegExp('^'+o+'.*$')
+ 
   return config.map(x => {
     if (typeof x === 'string') {
       return { app : toRegExp(x) };
@@ -243,7 +241,7 @@ let config:Configuration = {
     terminal   : ['iTerm2'],
     notes      : ['Notes'],
     textEditor : [{app:/^Code.*$/}, 'Sublime Text'],
-    ide        : [{app:/^Intellij.*$/}],
+    ide        : ['Intellij'],
     chat       : ['HipChat', { app : 'Google Chrome', window : 'Hangouts' }],
     email      : [ {app : 'Google Chrome', window:/^.*(tim@eaiti.com|timothy.soehnlin@gmail.com).*$/}],
   },
@@ -252,9 +250,9 @@ let config:Configuration = {
       vizio : {
         format :
         `aabbcc
-        aabbcc
-        aabbcc
-        ddddcc`,
+         aabbcc
+         aabbcc
+         ddddcc`,
         aliases : {
           a : ['browser'],
           b : ['ide'],

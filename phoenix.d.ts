@@ -162,3 +162,7 @@ interface ObjectConstructor {
   map<T,U>(o:Named<T>, fn:(T,string)=>U):Named<U>;
   forEach<T>(o:Named<T>, fn:(T,string)=>void):void;
 }
+
+interface Math {
+  max(...a:number[]):number 
+}
