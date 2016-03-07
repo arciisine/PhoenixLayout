@@ -47,3 +47,4 @@ declare interface Configuration {
 }
 
 declare function require(name:string);
+declare function require_(name:string);

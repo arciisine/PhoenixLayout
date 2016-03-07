@@ -3,6 +3,7 @@
 export default class ScreenLayout {
   screen:Screen;
   units:Size
+  padding:number = 0;
   cells:{[cell:string]:Rectangle&{r:number,c:number}}
   name:string;
 
@@ -10,6 +11,7 @@ export default class ScreenLayout {
     let items = cfg.format.trim().split('\n').map(x => x.trim().split(''));
     this.units = {width:items[0].length, height: items.length }
     this.cells = {};
+    this.padding = cfg.padding || 0;
 
     for (let r:number = 0; r < this.units.height; r++) {
       for (let c:number = 0; c < this.units.width; c++) {
@@ -43,10 +45,10 @@ export default class ScreenLayout {
 
     windows.forEach(window => {        
       let dims = { 
-        x      : ox + (cell.x * dx), 
-        y      : oy + (cell.y * dy), 
-        width  : cell.width * dx, 
-        height : cell.height * dy  
+        x      : ox + (cell.x * dx) + this.padding, 
+        y      : oy + (cell.y * dy) + this.padding, 
+        width  : cell.width * dx - this.padding * 2,  
+        height : cell.height * dy - this.padding * 2 
       }
       window.setFrame(dims);
     });

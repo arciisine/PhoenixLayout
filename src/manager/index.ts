@@ -15,19 +15,14 @@ export default class Manager {
     this.classes = new ClassificationManager(config.classes);
     this.layouts = new LayoutManager(config.layouts);
     
-    this.handlers.push(Phoenix.on('start', () => this.sync()));
-    this.handlers.push(Phoenix.on('windowDidOpen', w => this.layout(w)));
-    this.handlers.push(Phoenix.on('windowDidUnminimize', w => this.layout(w)));
-    this.handlers.push(Phoenix.on("screensDidChange", () => this.screensChange()));
+    this.handlers.push(Phoenix.on('start', () => this.layoutAll()));
+    //this.handlers.push(Phoenix.on('windowDidOpen', w => { Phoenix.notify(`Opened: ${w.app().name()} - ${w.title()}`); this.layout(w)}));
+    //this.handlers.push(Phoenix.on('windowDidUnminimize', w => { Phoenix.notify(`Unminimize:  ${w.app().name()} - ${w.title()}`);this.layout(w)}));
+    this.handlers.push(Phoenix.on("screensDidChange", () => this.layoutAll()));
   }
   
   sync() {
     Phoenix.notify("Started");
-    this.screensChange();
-    Window.visibleWindows().forEach(w => this.layout(w));
-  }
-  
-  screensChange() {
     this.screens.sync();
     for (var l in this.layouts.layouts) {
       let screens = this.layouts.layouts[l];
@@ -38,6 +33,11 @@ export default class Manager {
         return;
       }
     }
+  }
+  
+  layoutAll() {
+    this.sync();
+    Window.visibleWindows().forEach(w => this.layout(w));
   }
   
   layout(w:Window) {
