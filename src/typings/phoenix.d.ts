@@ -1,4 +1,4 @@
-/// <reference path="./node_modules/typescript/lib/lib.core.es6.d.ts" />
+/// <reference path="../../node_modules/typescript/lib/lib.core.es6.d.ts" />
 
 declare enum Modifier {
   cmd, alt, ctrl, shift
@@ -135,34 +135,20 @@ declare class Phoenix {
   static reload();
   static bind(key:string, modifiers:string[], callback:()=>void):KeyHandler;
   static on(event:string, callback:()=>void):EventHandler;
+  static on(string:"screensDidChange", callback:()=>void):EventHandler;
+  static on(string:"appDidLaunch", callback:(app:App)=>void):EventHandler;
+  static on(string:"appDidTerminate", callback:(app:App)=>void):EventHandler;
+  static on(string:"appDidHide", callback:(app:App)=>void):EventHandler;
+  static on(string:"appDidShow", callback:(app:App)=>void):EventHandler;
+  
+  static on(string:"windowDidOpen", callback:(window:Window)=>void):EventHandler;
+  static on(string:"windowDidClose", callback:(window:Window)=>void):EventHandler;
+  static on(string:"windowDidFocus", callback:(window:Window)=>void):EventHandler;
+  static on(string:"windowDidMove", callback:(window:Window)=>void):EventHandler;
+  static on(string:"windowDidResize", callback:(window:Window)=>void):EventHandler;
+  static on(string:"windowDidMinimize", callback:(window:Window)=>void):EventHandler;
+  static on(string:"windowDidUnminimize", callback:(window:Window)=>void):EventHandler;
+  
   static log(message:string);
   static notify(message:string);
-}
-
-
-type Cell = string;
-interface Named<T> {
-  [name:string]:T
-}
-
-type ScreenLayoutConfig = {format:string, aliases:Named<string[]>}
-type Classification = {app?:RegExp, window?:RegExp, windowNot?:RegExp}
-type ClassificationExternal = {app?:RegExp|string, window?:RegExp|string, windowNot?:RegExp|string}
-type Monitor = { size:string, name?:string };
-
-type Configuration =  {
-  screens : Named<Monitor>,
-  classes : Named<ClassificationExternal[]>,
-  layouts : Named<Named<ScreenLayoutConfig>>
-}
-
-interface ObjectConstructor {
-  keys(o:Object):string[]
-  values<T>(o:Named<T>):T[]
-  map<T,U>(o:Named<T>, fn:(T,string)=>U):Named<U>;
-  forEach<T>(o:Named<T>, fn:(T,string)=>void):void;
-}
-
-interface Math {
-  max(...a:number[]):number 
 }

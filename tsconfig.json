@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "module": "system",
+    "module": "amd",
     "target": "es5",
-    "outFile": "/Users/tim/.phoenix.js"
+    "outFile": "build/phoenix.js"
   }
 }
