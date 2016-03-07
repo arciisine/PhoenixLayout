@@ -8,9 +8,9 @@ try {
   //Do nothing
 }
 
+let mgr = null;
+
 export default function() {
-  let mgr = new Manager(cfg);
-  Phoenix.notify("Starting");
-  mgr.layoutAll();
+  mgr = new Manager(cfg);
 }
 

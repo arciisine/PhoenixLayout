@@ -16,12 +16,12 @@ let config:Configuration = {
   layouts : {
     home: {    
       vizio : {
-        padding: 5,
+        padding: 3,
         format :
-        `aabbcc
-         aabbcc
-         aabbcc
-         ddddcc`,
+        `aabbbccc
+         aabbbccc
+         aabbbccc
+         dddddccc`,
         aliases : {
           a : ['browser'],
           b : ['ide'],
