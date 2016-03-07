@@ -8,8 +8,8 @@ let config:Configuration = {
     browser    : [ {app : 'Google Chrome', windowNot:/^.*(tim@eaiti.com|timothy.soehnlin@gmail.com|Hangouts).*$/}, 'Safari', 'Firefox'],
     terminal   : [{app:'iTerm2', tile:{x:true}}],
     notes      : ['Notes'],
-    textEditor : [{app:/^Code.*$/}, 'Sublime Text'],
-    ide        : ['Intellij'],
+    textEditor : [{app:/^Code.*$/}, 'Sublime Text', 'Word'],
+    ide        : ['Intellij', 'Powerpoint'],
     chat       : ['HipChat'], /*{ app : 'Google Chrome', window : 'Hangouts' }],*/
     email      : [ {app : 'Google Chrome', window:/^.*(tim@eaiti.com|timothy.soehnlin@gmail.com).*$/}],
   },

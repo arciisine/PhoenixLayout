@@ -1,5 +1,4 @@
 /// <reference path="../typings/layout.d.ts" />
-
 export default class ClassificationManager {
   static id:number = 0;
   static toRegExp(o):RegExp {
@@ -50,5 +49,21 @@ export default class ClassificationManager {
         return found;
       }
     }
+  }
+  
+  classifyAndGroup(windows:Window[]):Named<Named<ClassifiedAssign>> {
+    let mapping:Named<Named<ClassifiedAssign>> = {}
+    
+    Window.visibleWindows().forEach(w => {
+      let cls = this.classify(w);
+      let app = w.app().name();
+      if (cls) {
+        mapping[cls.target] = mapping[cls.target] || {};
+        mapping[cls.target][cls.id] = mapping[cls.target][cls.id] || { cls : cls, windows : [] };
+        mapping[cls.target][cls.id].windows.push(w);
+      }
+    });
+    
+    return mapping;
   }
 }

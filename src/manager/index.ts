@@ -2,8 +2,6 @@ import ScreenManager from './screen';
 import ClassificationManager from './classification';
 import LayoutManager from './layout';
 
-type ClassifiedAssign = {cls:Classification, windows:Window[]};
-
 export default class Manager {
   screens:ScreenManager
   classes:ClassificationManager
@@ -51,17 +49,8 @@ export default class Manager {
   
   layout() {
     this.sync();
-    let mapping:Named<Named<ClassifiedAssign>> = {}
-    
-    Window.visibleWindows().forEach(w => {
-      let cls = this.classes.classify(w);
-      let app = w.app().name();
-      if (cls) {
-        mapping[cls.target] = mapping[cls.target] || {};
-        mapping[cls.target][cls.id] = mapping[cls.target][cls.id] || { cls : cls, windows : [] };
-        mapping[cls.target][cls.id].windows.push(w);
-      }
-    });
+
+   let mapping = this.classes.classifyAndGroup(Window.visibleWindows());
     
     Object.forEach(mapping, (byTarget:Named<ClassifiedAssign>, target) => {
       Object.forEach(byTarget, (assign:ClassifiedAssign, id) => {

@@ -50,5 +50,10 @@ declare interface Configuration {
   layouts : Named<Named<ScreenLayoutExternal>>
 }
 
+declare interface ClassifiedAssign {
+  cls:Classification, windows:Window[]
+}
+
+
 declare function require(name:string);
 declare function require_(name:string);
