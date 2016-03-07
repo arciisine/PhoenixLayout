@@ -19,6 +19,7 @@ export default class Manager {
     //this.handlers.push(Phoenix.on('windowDidOpen', w => { Phoenix.notify(`Opened: ${w.app().name()} - ${w.title()}`); this.layout(w)}));
     //this.handlers.push(Phoenix.on('windowDidUnminimize', w => { Phoenix.notify(`Unminimize:  ${w.app().name()} - ${w.title()}`);this.layout(w)}));
     this.handlers.push(Phoenix.on("screensDidChange", () => this.layoutAll()));
+    this.keyHandlers.push(Phoenix.bind("a", ['cmd', 'shift'], () => this.layoutAll()))
   }
   
   sync() {
