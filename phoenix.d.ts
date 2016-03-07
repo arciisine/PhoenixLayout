@@ -1,5 +1,4 @@
 /// <reference path="./node_modules/typescript/lib/lib.core.es6.d.ts" />
-/// <reference path="./typings/tsd.d.ts" />
 
 declare enum Modifier {
   cmd, alt, ctrl, shift
@@ -138,4 +137,28 @@ declare class Phoenix {
   static on(event:string, callback:()=>void):EventHandler;
   static log(message:string);
   static notify(message:string);
+}
+
+
+type Cell = string;
+interface Named<T> {
+  [name:string]:T
+}
+
+type ScreenLayoutConfig = {format:string, aliases:Named<string[]>}
+type Classification = {app?:RegExp, window?:RegExp, windowNot?:RegExp}
+type ClassificationExternal = {app?:RegExp|string, window?:RegExp|string, windowNot?:RegExp|string}
+type Monitor = { size:string, name?:string };
+
+type Configuration =  {
+  screens : Named<Monitor>,
+  classes : Named<ClassificationExternal[]>,
+  layouts : Named<Named<ScreenLayoutConfig>>
+}
+
+interface ObjectConstructor {
+  keys(o:Object):string[]
+  values<T>(o:Named<T>):T[]
+  map<T,U>(o:Named<T>, fn:(T,string)=>U):Named<U>;
+  forEach<T>(o:Named<T>, fn:(T,string)=>void):void;
 }

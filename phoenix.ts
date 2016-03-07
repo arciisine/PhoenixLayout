@@ -1,17 +1,19 @@
 /// <reference path="./phoenix.d.ts" />
 
-type Cell = string;
-type Named<T> = {[screen:string]:T}
+Object.values = function<T>(o:Named<T>):T[] {
+  let out:T[] = [];
+  for (let k in o) out.push(o[k]);
+  return out;
+}
 
-type ScreenLayoutConfig = {format:string, aliases:Named<string[]>}
-type Classification = {app?:RegExp, window?:RegExp, windowNot?:RegExp}
-type ClassificationExternal = {app?:RegExp|string, window?:RegExp|string, windowNot?:RegExp|string}
-type Monitor = { size:string, name?:string };
+Object.map = function<T,U>(o:Named<T>, fn:(T,string)=>U):Named<U> {
+  let out:Named<U> = {};
+  for (let k in o) out[k] = fn(o[k], k);
+  return out;
+}
 
-type Configuration =  {
-  screens : Named<Monitor>,
-  classes : Named<ClassificationExternal[]>,
-  layouts : Named<Named<ScreenLayoutConfig>>
+Object.forEach = function<T>(o:Named<T>, fn:(T,string)=>void):void {
+  for (let k in o) fn(o[k], k);
 }
 
 function message(msg) {
@@ -31,7 +33,7 @@ function screenParse(name:string, config:Monitor) {
 }
 
 function layoutParse(name:string, config:Named<ScreenLayoutConfig>):DesktopLayout {  
-  let screens:Named<ScreenLayout> = _.mapObject(config, (conf, name) => {
+  let screens:Named<ScreenLayout> = Object.map(config, (conf, name) => {
     return new ScreenLayout(conf);
   });
   let out = new DesktopLayout(screens);
@@ -100,7 +102,7 @@ class ScreenLayout {
           width  : cell.width * dx, 
           height : cell.height * dy  
         }
-        Phoenix.notify(`Positioning: ${JSON.stringify(dims)}: ${window.app().name} - ${window.title()}`)
+        Phoenix.notify(`Positioning: ${JSON.stringify(dims)}: ${window.app().name()} - ${window.title()}`)
         window.setFrame(dims);
       });
     });
@@ -125,9 +127,9 @@ class DesktopLayoutManager {
   private changeHandler:EventHandler;
 
   constructor(config:Configuration) {
-    this.screens = _.mapObject(config.screens, (m,name) => screenParse(name, m));   
-    this.layouts = _.mapObject(config.layouts, (l,name) => layoutParse(name, l));
-    this.classes = _.mapObject(config.classes, (c,name) => classesParse(name, c));    
+    this.screens = Object.map(config.screens, (m,name) => screenParse(name, m));   
+    this.layouts = Object.map(config.layouts, (l,name) => layoutParse(name, l));
+    this.classes = Object.map(config.classes, (c,name) => classesParse(name, c));    
     this.changeHandler = Phoenix.on("screensDidChange", () => this.readState());
     this.readState();
   }
@@ -177,7 +179,7 @@ class DesktopLayoutManager {
   }
   
   readScreenState() {
-    let screens:Monitor[] = _.values(this.screens);
+    let screens:Monitor[] = Object.values(this.screens);
     
     this.activeScreens = {};
    
@@ -195,7 +197,7 @@ class DesktopLayoutManager {
   determineActiveLayout() {
      this.activeLayout = null;
     
-    let layouts = _.values(this.layouts);
+    let layouts = Object.values(this.layouts);
     
     for (let i = 0; i < layouts.length; i++) {
       let lo = layouts[i];
