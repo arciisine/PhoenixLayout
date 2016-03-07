@@ -5,11 +5,13 @@ let config:Configuration = {
     tv     : {size:'1920x1080'} 
   },
   classes : {
-    browser    : [ {app : 'Google Chrome', windowNot:/^.*(tim@eaiti.com|timothy.soehnlin@gmail.com|Hangouts).*$/}, 'Safari', 'Firefox'],
-    terminal   : [{app:'iTerm2', tile:{x:true}}],
+    browser    : [ {app : 'Google Chrome', windowNot:/^((.*(tim@eaiti.com|timothy.soehnlin@gmail.com).*)|Hangouts|Google Play Music)$/i}, 'Safari', 'Firefox'],
+    system     : ['Finder', 'System'],
+    terminal   : [{app:'iTerm2'}],
     notes      : ['Notes'],
-    textEditor : [{app:/^Code.*$/}, 'Sublime Text', 'Word'],
-    ide        : ['Intellij', 'Powerpoint'],
+    textEditor : [{app:/^Code.*$/}, 'Sublime Text', 'Microsoft Word'],
+    ide        : ['Intellij', 'Microsoft Powerpoint'],
+    music      : [ {app :'Google Chrome', window:'Google Play Music'}],
     chat       : ['HipChat'], /*{ app : 'Google Chrome', window : 'Hangouts' }],*/
     email      : [ {app : 'Google Chrome', window:/^.*(tim@eaiti.com|timothy.soehnlin@gmail.com).*$/}],
   },
@@ -18,23 +20,28 @@ let config:Configuration = {
       vizio : {
         padding: 3,
         format :
-        `aabbbccc
-         aabbbccc
-         aabbbccc
-         dddddccc`,
+        `bbbbaaaccc
+         bbbbaaaccc
+         bbbbaaaccc
+         ddddaaaeee`,
         aliases : {
-          a : ['browser', 'chat'],
-          b : ['ide'],
-          c : ['textEditor'],
-          d : ['terminal']         
+          a : ['textEditor'],
+          b : ['browser', 'system'],
+          c : ['ide'],
+          d : ['terminal'],
+          e : ['chat']         
         }
       },
       laptop: {
         padding: 3,
-        format  : `eef`,
+        format  : 
+          `xxxy
+           xxxy
+           xxxz`,
         aliases : {
-          e : ['email'],
-          f : ['notes']
+          x : ['email'],
+          y : ['notes'],
+          z : ['music']
         }
       }
     },
@@ -43,7 +50,7 @@ let config:Configuration = {
         padding: 3, 
         format  : `aab`,
         aliases : {
-          a : ['browser', 'textEditor', 'ide', 'email'],
+          a : ['browser', 'textEditor', 'ide', 'email', 'system'],
           b : ['notes', 'terminal', 'chat']
         }
       }

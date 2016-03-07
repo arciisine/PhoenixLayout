@@ -20,7 +20,7 @@ export default class Manager {
     //this.handlers.push(Phoenix.on('windowDidOpen', w => this.windowAdded(w)));
     //this.handlers.push(Phoenix.on('windowDidUnminimize', w => this.windowAdded(w)));
     this.handlers.push(Phoenix.on("screensDidChange", () => this.screensChanged()));
-    this.keyHandlers.push(Phoenix.bind("a", ['cmd', 'shift'], () => this.layout()))
+    this.keyHandlers.push(Phoenix.bind(".", ['cmd', 'shift'], () => this.layout()))
     
     this.layout();
   }
@@ -50,7 +50,7 @@ export default class Manager {
   layout() {
     this.sync();
 
-   let mapping = this.classes.classifyAndGroup(Window.visibleWindows());
+    let mapping = this.classes.classifyAndGroup(Window.visibleWindows());
     
     Object.forEach(mapping, (byTarget:Named<ClassifiedAssign>, target) => {
       Object.forEach(byTarget, (assign:ClassifiedAssign, id) => {

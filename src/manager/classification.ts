@@ -58,9 +58,12 @@ export default class ClassificationManager {
       let cls = this.classify(w);
       let app = w.app().name();
       if (cls) {
+        Phoenix.notify(`Mapping for: ${app} - ${w.title()} - ${cls.target}`)
         mapping[cls.target] = mapping[cls.target] || {};
         mapping[cls.target][cls.id] = mapping[cls.target][cls.id] || { cls : cls, windows : [] };
         mapping[cls.target][cls.id].windows.push(w);
+      } else {
+        Phoenix.notify(`No mapping for: ${app} - ${w.title()}`)
       }
     });
     
