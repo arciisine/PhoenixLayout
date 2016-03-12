@@ -9,6 +9,7 @@ export default class Manager {
   
   private handlers:EventHandler[] = [];
   private keyHandlers:KeyHandler[] = [];
+  private previousSizes:{[key:number]:Rectangle} = {}
 
   constructor(config:Configuration) {
     Phoenix.notify("Started");
@@ -21,8 +22,23 @@ export default class Manager {
     //this.handlers.push(Phoenix.on('windowDidUnminimize', w => this.windowAdded(w)));
     this.handlers.push(Phoenix.on("screensDidChange", () => this.screensChanged()));
     this.keyHandlers.push(Phoenix.bind(".", ['cmd', 'shift'], () => this.layout()))
+    this.keyHandlers.push(Phoenix.bind("up", ['cmd', 'shift'], () => this.toggleFullScreen()))
     
     this.layout();
+  }
+  
+  toggleFullScreen(w:Window = null) {
+    if (w === null) {
+      w = Window.focusedWindow();
+    }
+    let size = w.screen().visibleFrameInRectangle();
+    if (this.previousSizes[w.hash()]) {
+      size = this.previousSizes[w.hash()];
+      delete this.previousSizes[w.hash()];
+    } else {
+      this.previousSizes[w.hash()] = w.frame()
+    }
+    w.setSize(size);
   }
   
   windowAdded(w:Window) {

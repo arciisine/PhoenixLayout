@@ -9,8 +9,9 @@ let config:Configuration = {
     system     : ['Finder', 'System'],
     terminal   : [{app:'iTerm2'}],
     notes      : ['Notes'],
-    textEditor : [{app:/^Code.*$/}, 'Sublime Text', 'Microsoft Word'],
-    ide        : ['Intellij', 'Microsoft Powerpoint'],
+    textEditor : [{app:/^Code.*$/}, 'Sublime Text'],
+    office     : ['Microsoft Powerpoint', 'Microsoft Word', 'Microsoft Excel'],
+    ide        : ['Intellij'],
     music      : [ {app :'Google Chrome', window:'Google Play Music'}],
     chat       : ['HipChat'], /*{ app : 'Google Chrome', window : 'Hangouts' }],*/
     email      : [ {app : 'Google Chrome', window:/^.*(tim@eaiti.com|timothy.soehnlin@gmail.com).*$/}],
@@ -27,7 +28,7 @@ let config:Configuration = {
         aliases : {
           a : ['textEditor'],
           b : ['browser', 'system'],
-          c : ['ide'],
+          c : ['ide', 'office'],
           d : ['terminal'],
           e : ['chat']         
         }

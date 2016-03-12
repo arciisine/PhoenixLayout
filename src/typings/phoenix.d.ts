@@ -22,14 +22,15 @@ declare class Rectangle implements Size,Point {
 }
 
 declare class Identifiable {
-  //hash():number;
-  // isE/qual(o:any):boolean;
+  hash():number;
+  // isEqual(o:any):boolean;
 }
 
 declare class KeyHandler implements Identifiable {
   key:string;
   modifiers:string[]
 
+  hash():number
   isEnabled():boolean
   enable():boolean
   disable():boolean
@@ -37,6 +38,7 @@ declare class KeyHandler implements Identifiable {
 
 declare class EventHandler implements Identifiable {
   name:string;
+  hash():number
 }
 
 declare class Modal implements Identifiable {
@@ -44,6 +46,7 @@ declare class Modal implements Identifiable {
   duration:number;
   message:string;
 
+  hash():number
   frame():Rectangle
   show()
   close()
@@ -60,6 +63,7 @@ declare class Window implements Identifiable {
   static visibleWindows():Window[]
   static visibleWindowsInOrder():Window[]
 
+  hash():number
   otherWindowsOnSameScreen():Window[]
   otherWindowsOnAllScreens():Window[]
   title():string
@@ -94,6 +98,7 @@ declare class Screen implements Identifiable {
   static mainScreen():Screen
   static screens():Screen[]
 
+  hash():number
   frameInRectangle():Rectangle 
   visibleFrameInRectangle():Rectangle 
   next():Screen
@@ -114,6 +119,7 @@ declare class App implements Identifiable {
   static focusedApp():App;
   static runningApps():App[];
 
+  hash():number
   processIdentifier():number;
   bundleIdentifier():string;
   name():string;
