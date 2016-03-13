@@ -36,7 +36,7 @@ export default class ScreenLayout extends Base {
     }
   }
   
-  layout(cls:Classification, windows:Window[]) {
+  layout(cls:Classification, windows:Window[]):boolean {
     let fr = this.screen.visibleFrameInRectangle();
     let dx = fr.width / this.units.width;
     let dy = fr.height / this.units.height;
@@ -45,7 +45,7 @@ export default class ScreenLayout extends Base {
     let px = this.padding;
     let py = this.padding;
     let cell = this.cells[cls.target];
-    if (!cell) return; // DO nothing if it doesn't match
+    if (!cell) return false; // DO nothing if it doesn't match
 
     
     if (windows.length > 1  && cls.tile) {
@@ -78,5 +78,7 @@ export default class ScreenLayout extends Base {
         }
       }
     });
+    
+    return true;
   }
 }
