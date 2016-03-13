@@ -11,11 +11,17 @@ declare interface Named<T> {
   [name:string]:T
 }
 
+declare interface Numbered<T> {
+  [name:number]:T
+}
+
 declare interface ObjectConstructor {
   keys(o:Object):string[]
-  values<T>(o:Named<T>):T[]
+  values<T>(o:Named<T>|Numbered<T>):T[]
   map<T,U>(o:Named<T>, fn:(T,string)=>U):Named<U>;
+  map<T,U>(o:Numbered<T>, fn:(T,number)=>U):Numbered<U>;
   forEach<T>(o:Named<T>, fn:(T,string)=>void):void;
+  forEach<T>(o:Numbered<T>, fn:(T,number)=>void):void;
 }
 
 declare interface Math {

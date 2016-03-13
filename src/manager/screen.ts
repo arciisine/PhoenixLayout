@@ -1,18 +1,32 @@
 /// <reference path="../typings/layout.d.ts" />
-import Base from '../base';
+import {BaseItemed} from '../base';
 
-export default class ScreenManager extends Base {
-  activeScreens:Named<Screen>;  
-  activeScreenIds:{[key:number]:Screen} = {}
-    
+export default class ScreenManager extends BaseItemed<Screen> {
+  static buildKey(sc:Screen):string {
+    let rc = sc.frameInRectangle();
+    return `${rc.width}x${rc.height}`
+  }
+  
   constructor(public screens:Named<Monitor>) {
     super()
     Object.forEach(screens, (p,name) => { p.name = name; })
     this.onPhoenixEvent("screensDidChange", () => this.sync());
   }
+    
+  findMonitor(sc:Screen):Monitor {
+    let key = ScreenManager.buildKey(sc);
+    for (let name in this.screens) {
+      if (this.screens[name].size === key) {
+        return this.screens[name];
+      }
+    }
+    return null;
+  }
   
   isMatching(screens:string[]):boolean {
-    let activeScreenKeys = Object.keys(this.activeScreens);
+    let activeScreenKeys = Object.keys(this.state)
+      .map(id => this.findMonitor(this.state[id]).name);
+      
     let count = activeScreenKeys.length;
   
     if (count !== screens.length) {
@@ -28,37 +42,8 @@ export default class ScreenManager extends Base {
     
   sync() {
     this.notify("Attempting to sync displays");
-    let ids = this.activeScreenIds;
-    this.activeScreenIds = {};
-    let changed = false;
-    
-    Screen.screens().forEach(sc => {
-      let key = sc.hash();
-      changed = changed || !ids[key]; //Added
-      this.activeScreenIds[key] = sc;
-      delete ids[key]
-    })
-    
-    changed = changed || Object.keys(ids).length > 0;
-    
-    if (!changed) {
-      return;
-    } 
-    
-    let screens:Monitor[] = Object.values(this.screens);
-    
-    this.activeScreens = {};  
-   
-    Screen.screens().forEach(sc => {
-      let rect = sc.frameInRectangle()
-      let key = `${rect.width}x${rect.height}`;
-      let mon = screens.find(m => m.size == key);
-      if (mon) {
-        this.activeScreens[mon.name] = sc;
-      }
-    });
-    
-    this.notify(`Screens changed`);
-    this.dispatchEvent("change", this.activeScreens);
+    if (this.syncItems(Screen.screens())) {
+      this.notify(`Screens changed`);
+    }
   }
 }

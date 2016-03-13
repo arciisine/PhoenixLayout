@@ -1,15 +1,14 @@
 import ScreenManager from './screen';
 import ClassificationManager from './classification';
 import LayoutManager from './layout';
-import Base from '../base';
-import {Modifier} from '../base';
+import {Base,Modifier} from '../base';
 
 export default class Manager extends Base {
   screens:ScreenManager
   classes:ClassificationManager
   layouts:LayoutManager
   
-  private previousSizes:{[key:number]:Rectangle} = {}
+  private previousSizes:Numbered<Rectangle> = {}
 
   constructor(config:Configuration) {
     super()
@@ -55,7 +54,7 @@ export default class Manager extends Base {
       let screenNames = screens.map(s => s.name);
       if (this.screens.isMatching(screenNames)) {
         this.message(`Activating: ${l}`);
-        this.layouts.activate(l, this.screens.activeScreens);
+        this.layouts.activate(l, this.screens.items);
         return;
       }
     }
