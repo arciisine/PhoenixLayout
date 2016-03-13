@@ -8,7 +8,7 @@ export default class ScreenManager extends Base {
   constructor(public screens:Named<Monitor>) {
     super()
     Object.forEach(screens, (p,name) => { p.name = name; })
-    this.onPhoenixEvent("screensDidChange", () => this.sync());  
+    this.onPhoenixEvent("screensDidChange", () => this.sync());
   }
   
   isMatching(screens:string[]):boolean {
@@ -27,6 +27,7 @@ export default class ScreenManager extends Base {
   }
     
   sync() {
+    this.notify("Attempting to sync displays");
     let ids = this.activeScreenIds;
     this.activeScreenIds = {};
     let changed = false;
@@ -58,6 +59,6 @@ export default class ScreenManager extends Base {
     });
     
     this.notify(`Screens changed`);
-    this.dispatchEvent("changed", this.activeScreens);
+    this.dispatchEvent("change", this.activeScreens);
   }
 }

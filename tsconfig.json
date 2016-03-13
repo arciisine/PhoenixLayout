@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "module": "amd",
+    "preserveConstEnums": true,
     "target": "es5",
     "outFile": "build/phoenix.js"
   }

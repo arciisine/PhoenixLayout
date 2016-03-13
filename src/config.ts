@@ -51,7 +51,7 @@ let config:Configuration = {
         padding: 3, 
         format  : `aab`,
         aliases : {
-          a : ['browser', 'textEditor', 'ide', 'email', 'system'],
+          a : ['browser', 'textEditor', 'ide', 'email', 'system', 'office'],
           b : ['notes', 'terminal', 'chat']
         }
       }

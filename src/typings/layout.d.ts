@@ -1,4 +1,7 @@
 /// <reference path="./phoenix.d.ts" />
+declare enum Modifier {
+  cmd, alt, ctrl, shift
+}
 
 declare type Cell = string;
 

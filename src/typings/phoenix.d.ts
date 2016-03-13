@@ -1,9 +1,4 @@
 /// <reference path="../../node_modules/typescript/lib/lib.core.es6.d.ts" />
-
-declare enum Modifier {
-  cmd, alt, ctrl, shift
-}
-
 declare class Size {
   width:number;
   height:number;

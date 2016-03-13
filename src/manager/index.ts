@@ -2,6 +2,7 @@ import ScreenManager from './screen';
 import ClassificationManager from './classification';
 import LayoutManager from './layout';
 import Base from '../base';
+import {Modifier} from '../base';
 
 export default class Manager extends Base {
   screens:ScreenManager
@@ -18,16 +19,19 @@ export default class Manager extends Base {
     this.classes = new ClassificationManager(config.classes);
     this.layouts = new LayoutManager(config.layouts);
     
-    //this.handlers.push(Phoenix.on('windowDidOpen', w => this.windowAdded(w)));
-    //this.handlers.push(Phoenix.on('windowDidUnminimize', w => this.windowAdded(w)));
-    this.screens.on("change", () => this.layout());
+    this.onPhoenixEvent("windowDidOpen windowDidUnminimize", (w:Window) => {
+      if (w.isNormal() && w.isVisible()) this.layout();
+    });
     
-    this.onPhoenixKey(".", ['cmd', 'shift'], () => {
-      this.notify("Relayout called on keypress")
+    this.screens.on("change", () => {
+      this.selectLayout();
       this.layout()
-    })
-    this.onPhoenixKey("up", ['cmd', 'shift'], () => this.toggleFullScreen())
-    this.layout();
+    });
+    
+    this.onPhoenixKey(".",  [Modifier.cmd, Modifier.shift], () => this.layout());        
+    this.onPhoenixKey("up", [Modifier.cmd, Modifier.shift], () => this.toggleFullScreen())
+       
+    this.screens.sync();
   }
   
   toggleFullScreen(w:Window = null) {
@@ -41,19 +45,11 @@ export default class Manager extends Base {
     } else {
       this.previousSizes[w.hash()] = w.frame()
     }
+    w.setTopLeft(size);
     w.setSize(size);
   }
   
-  windowAdded(w:Window) {
-    this.layout();
-  }
-  
-  screensChanged() {        
-    this.layout();
-  }
-  
-  sync() {
-    this.screens.sync();
+  selectLayout() {
     for (var l in this.layouts.layouts) {
       let screens = this.layouts.layouts[l];
       let screenNames = screens.map(s => s.name);
@@ -65,9 +61,7 @@ export default class Manager extends Base {
     }
   }
   
-  layout() {
-    this.sync();
-
+  layout() {   
     let mapping = this.classes.classifyAndGroup(Window.visibleWindows());
     
     Object.forEach(mapping, (byTarget:Named<ClassifiedAssign>, target) => {
