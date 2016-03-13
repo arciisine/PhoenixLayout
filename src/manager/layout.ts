@@ -13,6 +13,7 @@ export default class LayoutManager  extends Base {
 
   items:Named<ScreenLayout[]>
   active:ScreenLayout[];
+  activeName:string;
 
   constructor(layouts:Named<Named<ScreenLayoutExternal>>) {
     super()
@@ -28,12 +29,15 @@ export default class LayoutManager  extends Base {
     }
   }
   
-  activate(layout:string, activeScreens:Named<Screen>) {
+  activate(layout:string, activeScreens:Named<Screen>) {    
     this.active = this.items[layout];
     this.active.forEach(l => {
       l.screen = activeScreens[l.name];
     });
-    this.dispatchEvent("activated", layout);
+    if (layout !== this.activeName) {
+      this.activeName = layout;   
+      this.dispatchEvent("activated", layout);
+    }
   }
   
   select(activeScreens:Named<Screen>) {
@@ -41,7 +45,7 @@ export default class LayoutManager  extends Base {
     if (layout) {
       this.activate(layout, activeScreens);
     } else {
-      this.notify("Layout not found");
+      this.notify(`Layout not found: ${Object.keys(activeScreens)}`);
     }
   }
   

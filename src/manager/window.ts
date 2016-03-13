@@ -31,15 +31,17 @@ export default class WindowManager extends BaseItemed<Window> {
     
     if (this.grouped[cls.target] && this.grouped[cls.target][cls.id]) {
       this.grouped[cls.target][cls.id].windows = 
-        this.grouped[cls.target][cls.id].windows.filter(w2 => w2.hash() !== key)
+      this.grouped[cls.target][cls.id].windows.filter(w2 => w2.hash() !== key)
     } 
   }
   
-  regroupItems() {
-    Object.forEach(this.items, (w, id) => {
-      this.ungroupItem(w);
-      this.groupItem(w);
-    })
+  reclassifyItem(w:Window) {
+    this.ungroupItem(w);
+    this.groupItem(w);
+  }
+  
+  reclassifyItems() {
+    Object.forEach(this.items, (w, id) => this.reclassifyItem(w))
   }
   
   onItemAdded(w:Window) {

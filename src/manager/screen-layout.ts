@@ -46,7 +46,6 @@ export default class ScreenLayout extends Base {
     let py = this.padding;
     let cell = this.cells[cls.target];
     if (!cell) return false; // DO nothing if it doesn't match
-
     
     if (windows.length > 1  && cls.tile) {
       let count = windows.length;
@@ -60,7 +59,8 @@ export default class ScreenLayout extends Base {
       }
     }  
     
-    windows.forEach(window => {        
+    windows.forEach(window => {
+      
       let dims = { 
         x      : ox + (cell.x * dx) + px, 
         y      : oy + (cell.y * dy) + py ,

@@ -20,25 +20,32 @@ export default class Manager extends Base {
     this.windows = new WindowManager(this.classifications);
     
     this.screens.on("changed", () => this.layouts.select(this.screens.byName));    
-    this.windows.on("item-added", (w:Window) => {
-      this.message(`Single Layout: ${w.title()}`)
-      this.layouts.layoutSingle(this.windows.windowClass[w.hash()], [w]);
-    });
+    this.windows.on("item-added", (w:Window) => this.layoutSingle(w));
     this.layouts.on("activated", name => {
       this.message(`Activating: ${name}`)
       this.refresh();
     });
     
-    this.onPhoenixKey(".",  [Modifier.cmd, Modifier.shift], () => this.refresh())        
-    this.onPhoenixKey("up", [Modifier.cmd, Modifier.shift], () => this.windows.toggleFullScreen())
+    this.onPhoenixKey(".",    [Modifier.cmd, Modifier.shift], () => this.refresh())        
+    this.onPhoenixKey("up",   [Modifier.cmd, Modifier.shift], () => this.windows.toggleFullScreen())
+    this.onPhoenixKey("down", [Modifier.cmd, Modifier.shift], () => {
+      let w = Window.focusedWindow()
+      this.windows.reclassifyItem(w);
+      this.layoutSingle(w)
+    });
             
     this.screens.sync();
     this.windows.sync();
   }
   
   refresh() {    
-    this.windows.regroupItems();
+    this.windows.reclassifyItems();
     this.layout();
+  }
+  
+  layoutSingle(w:Window) {
+    this.notify(`Single Layout: ${w.title()}`)
+    this.layouts.layoutSingle(this.windows.windowClass[w.hash()], [w]);
   }
      
   layout() {

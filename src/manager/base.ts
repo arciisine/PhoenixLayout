@@ -69,22 +69,20 @@ export abstract class BaseItemed<T extends Identifiable> extends Base {
         toAdd[key] = it;
       }
       out[key] = it;
-    });
+    });      
     
     if (!partial) {
-      Object.keys(this.items).forEach(k => {
-        if (!out[k]) {
-          toRemove[k] = this.items[k];
-        }
+      Object.forEach(this.items, (sc:Screen, k:string) => {
+        if (!out[k]) toRemove[k] = sc;
       });
     }
-
+    
     let toAddItems = Object.values(toAdd);
     let toRemoveItems = Object.values(toRemove);
     
     if (toAddItems.length || toRemoveItems.length) {        
-      toAddItems.forEach(it => this.dispatchEvent("item-added", it))      
       toRemoveItems.forEach(it => this.dispatchEvent("item-removed", it))
+      toAddItems.forEach(it => this.dispatchEvent("item-added", it))      
       this.dispatchEvent("changed");
       return true;
     } else {

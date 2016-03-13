@@ -13,17 +13,17 @@ export default class ScreenManager extends BaseItemed<Screen> {
     super()
     Object.forEach(screens, (p,name) => { p.name = name; })
     this.onPhoenixEvent("screensDidChange", () => this.sync());
+    this.on('changed', () => this.notify(`Screens changed`))
   }
     
   sync() {
     this.notify("Attempting to sync displays");
-    if (this.syncItems(Screen.screens())) {
-      this.notify(`Screens changed`);
-    }
+    this.notify(`All: ${Screen.screens().map(x => x.hash()).join(' ')}`)
+    this.syncItems(Screen.screens())
   }  
   
   onItemAdded(s:Screen) {
-    Phoenix.notify(`${s.hash()}`);
+    Phoenix.notify(`Added ${s.hash()}`);
     super.onItemAdded(s);
     let mon = this.findMonitor(s);
     if (mon != null) {
@@ -32,6 +32,7 @@ export default class ScreenManager extends BaseItemed<Screen> {
   } 
   
   onItemRemoved(s:Screen) {
+    Phoenix.notify(`Removed ${s.hash()}`);
     super.onItemAdded(s);
     let mon = this.findMonitor(s);
     if (mon != null) {
