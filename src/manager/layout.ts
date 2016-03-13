@@ -1,5 +1,5 @@
-import ScreenLayout from '../layout/screen';
-import {Base} from '../base';
+import ScreenLayout from './screen-layout';
+import {Base} from './base';
 
 export default class LayoutManager  extends Base {
 

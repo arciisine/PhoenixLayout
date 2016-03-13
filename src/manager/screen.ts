@@ -1,5 +1,5 @@
 /// <reference path="../typings/layout.d.ts" />
-import {BaseItemed} from '../base';
+import {BaseItemed} from './base';
 
 export default class ScreenManager extends BaseItemed<Screen> {
   static buildKey(sc:Screen):string {

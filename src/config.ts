@@ -19,7 +19,7 @@ let config:Configuration = {
   layouts : {
     home: {    
       vizio : {
-        padding: 3,
+        padding: 2,
         format :
         `bbbbaaaccc
          bbbbaaaccc
@@ -34,7 +34,7 @@ let config:Configuration = {
         }
       },
       laptop: {
-        padding: 3,
+        padding: 2,
         format  : 
           `xxxxxyy
            xxxxxyy
@@ -48,11 +48,11 @@ let config:Configuration = {
     },
     mobile: {
       laptop: {
-        padding: 3, 
+        padding: 2, 
         format  : `aab`,
         aliases : {
-          a : ['browser', 'textEditor', 'ide', 'email', 'system', 'office'],
-          b : ['notes', 'terminal', 'chat']
+          a : ['browser', 'textEditor', 'ide', 'system', 'office'],
+          b : ['notes', 'terminal', 'email', 'chat']
         }
       }
     }

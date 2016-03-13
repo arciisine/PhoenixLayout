@@ -1,5 +1,5 @@
 /// <reference path="../typings/layout.d.ts" />
-import {BaseItemed} from '../base';
+import {BaseItemed} from './base';
 import ClassificationManager from './classification';
 
 export default class WindowManager extends BaseItemed<Window> {
@@ -18,23 +18,38 @@ export default class WindowManager extends BaseItemed<Window> {
     this.syncItems(Window.visibleWindows().filter( w => w.isNormal() )) 
   }
   
-  onItemAdded(w:Window) {
-    super.onItemAdded(w);
+  groupItem(w:Window) {
     let cls = this.windowClass[w.hash()] = this.classifications.classify(w);
     let l1 = this.grouped[cls.target] = this.grouped[cls.target] || {};
     let l2 = l1[cls.id] = l1[cls.id] || { cls : cls, windows : [] };
     l2.windows.push(w);
   }
   
-  onItemRemoved(w:Window) {
-    super.onItemRemoved(w);
+  ungroupItem(w:Window) {
     let key = w.hash();
-    let cls =  this.windowClass[key];
+    let cls = this.windowClass[key];
     
     if (this.grouped[cls.target] && this.grouped[cls.target][cls.id]) {
       this.grouped[cls.target][cls.id].windows = 
         this.grouped[cls.target][cls.id].windows.filter(w2 => w2.hash() !== key)
     } 
+  }
+  
+  regroupItems() {
+    Object.forEach(this.items, (w, id) => {
+      this.ungroupItem(w);
+      this.groupItem(w);
+    })
+  }
+  
+  onItemAdded(w:Window) {
+    super.onItemAdded(w);
+    this.groupItem(w);
+  }
+  
+  onItemRemoved(w:Window) {
+    super.onItemRemoved(w);
+    this.ungroupItem(w);
   }
   
   toggleFullScreen(w:Window = null) {

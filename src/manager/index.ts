@@ -2,7 +2,7 @@ import ScreenManager from './screen';
 import WindowManager from './window';
 import LayoutManager from './layout';
 import ClassificationManager from './classification';
-import {Base,Modifier} from '../base';
+import {Base,Modifier} from './base';
 
 export default class Manager extends Base {
   screens:ScreenManager
@@ -26,14 +26,19 @@ export default class Manager extends Base {
     });
     this.layouts.on("activated", name => {
       this.message(`Activating: ${name}`)
-      this.layout();
+      this.refresh();
     });
     
-    this.onPhoenixKey(".",  [Modifier.cmd, Modifier.shift], () => this.layout())        
+    this.onPhoenixKey(".",  [Modifier.cmd, Modifier.shift], () => this.refresh())        
     this.onPhoenixKey("up", [Modifier.cmd, Modifier.shift], () => this.windows.toggleFullScreen())
             
     this.screens.sync();
     this.windows.sync();
+  }
+  
+  refresh() {    
+    this.windows.regroupItems();
+    this.layout();
   }
      
   layout() {
