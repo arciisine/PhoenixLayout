@@ -10,13 +10,13 @@ export default class Manager extends Base {
   layouts:LayoutManager
   classifications:ClassificationManager
   
-  constructor(config:Configuration = null) {
+  constructor(config:Configuration) {
     super()
     this.notify("Started");
 
-    this.classifications = new ClassificationManager(config && config.classes);
-    this.screens = new ScreenManager(config && config.screens);
-    this.layouts = new LayoutManager(config && config.layouts);
+    this.classifications = new ClassificationManager(config.classes);
+    this.screens = new ScreenManager(config.screens);
+    this.layouts = new LayoutManager(config.layouts);
     this.windows = new WindowManager(this.classifications);
     
     this.screens.on("changed", () => this.layouts.select(this.screens.byName));    
