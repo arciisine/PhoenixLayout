@@ -9,13 +9,11 @@ export default class WindowManager extends BaseItemed<Window> {
 
   constructor(public classifier:Classifier) {
     super()
-    this.onPhoenixEvent("windowDidOpen windowDidUnminimize", (w:Window) => {
-      if (w.isNormal() && w.isVisible()) this.sync();
-    });
+    this.onPhoenixEvent("windowDidOpen windowDidUnminimize", (w:Window) => this.sync());
   }
   
   sync() {
-    this.syncItems(Window.visibleWindows()) 
+    this.syncItems(Window.visibleWindows().filter( w => w.isNormal() )) 
   }
   
   onItemAdded(w:Window) {
