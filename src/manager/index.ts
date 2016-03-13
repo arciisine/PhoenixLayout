@@ -1,6 +1,7 @@
 import ScreenManager from './screen';
 import WindowManager from './window';
 import LayoutManager from './layout';
+import Classifier from './classifier';
 import {Base,Modifier} from '../base';
 
 export default class Manager extends Base {
@@ -13,7 +14,7 @@ export default class Manager extends Base {
     this.notify("Started");
 
     this.screens = new ScreenManager(config.screens);
-    this.windows = new WindowManager(config.classes);
+    this.windows = new WindowManager(new Classifier(config.classes));
     this.layouts = new LayoutManager(config.layouts);
     
     this.screens.on("change", () => {
@@ -32,6 +33,6 @@ export default class Manager extends Base {
   }
      
   layout() {   
-    this.layouts.layout(this.windows.classifyAndGroup());
+    this.layouts.layout(this.windows.groupedByClassification());
   }
 }
