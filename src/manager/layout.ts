@@ -45,12 +45,16 @@ export default class LayoutManager  extends Base {
     }
   }
   
+  layoutSingle(cls:Classification, windows:Window[]) {
+    this.active.forEach(layout => {   
+      layout.layout(cls, windows);
+    })
+  }
+  
   layout(mapping:Named<Named<ClassifiedAssign>>) {
     Object.forEach(mapping, (byTarget:Named<ClassifiedAssign>, target) => {
       Object.forEach(byTarget, (assign:ClassifiedAssign, id) => {
-        this.active.forEach(layout => {
-          layout.layout(assign.cls, assign.windows);
-        });
+        this.layoutSingle(assign.cls, assign.windows);      
       })
     })
   }

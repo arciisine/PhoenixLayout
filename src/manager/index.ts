@@ -20,7 +20,10 @@ export default class Manager extends Base {
     this.windows = new WindowManager(this.classifications);
     
     this.screens.on("changed", () => this.layouts.select(this.screens.byName));    
-    this.windows.on("changed", () => this.layout());
+    this.windows.on("item-added", (w:Window) => {
+      this.message(`Single Layout: ${w.title()}`)
+      this.layouts.layoutSingle(this.windows.windowClass[w.hash()], [w]);
+    });
     this.layouts.on("activated", name => {
       this.message(`Activating: ${name}`)
       this.layout();
@@ -34,6 +37,6 @@ export default class Manager extends Base {
   }
      
   layout() {
-    this.layouts.layout(this.windows.groupedByClassification());
+    this.layouts.layout(this.windows.grouped);
   }
 }

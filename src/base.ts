@@ -58,7 +58,7 @@ export abstract class BaseItemed<T extends Identifiable> extends Base {
     delete this.items[it.hash()]
   }
   
-  syncItems(all:T[]):boolean {
+  syncItems(all:T[], partial:boolean = false):boolean {
     let toAdd:Numbered<T> = {}
     let toRemove:Numbered<T> = {}
     let out:Numbered<T> = {};
@@ -71,11 +71,13 @@ export abstract class BaseItemed<T extends Identifiable> extends Base {
       out[key] = it;
     });
     
-    Object.keys(this.items).forEach(k => {
-      if (!out[k]) {
-        toRemove[k] = this.items[k];
-      }
-    });
+    if (!partial) {
+      Object.keys(this.items).forEach(k => {
+        if (!out[k]) {
+          toRemove[k] = this.items[k];
+        }
+      });
+    }
 
     let toAddItems = Object.values(toAdd);
     let toRemoveItems = Object.values(toRemove);

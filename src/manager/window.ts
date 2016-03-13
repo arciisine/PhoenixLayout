@@ -1,15 +1,17 @@
 /// <reference path="../typings/layout.d.ts" />
 import {BaseItemed} from '../base';
-import Classifier from './classifier';
+import ClassificationManager from './classification';
 
 export default class WindowManager extends BaseItemed<Window> {
 
   windowClass:Numbered<Classification> = {}
   previousSizes:Numbered<Rectangle> = {}
-
-  constructor(public classifier:Classifier) {
+  grouped:Named<Named<ClassifiedAssign>> = {}
+  
+  constructor(public classifications:ClassificationManager) {
     super()
     this.onPhoenixEvent("windowDidOpen windowDidUnminimize", (w:Window) => this.sync());
+    this.onPhoenixEvent("appDidLaunch appDidActivate appDidShow", (a:App) => this.sync());
   }
   
   sync() {
@@ -18,12 +20,21 @@ export default class WindowManager extends BaseItemed<Window> {
   
   onItemAdded(w:Window) {
     super.onItemAdded(w);
-    this.windowClass[w.hash()] = this.classifier.classify(w);
+    let cls = this.windowClass[w.hash()] = this.classifications.classify(w);
+    let l1 = this.grouped[cls.target] = this.grouped[cls.target] || {};
+    let l2 = l1[cls.id] = l1[cls.id] || { cls : cls, windows : [] };
+    l2.windows.push(w);
   }
   
   onItemRemoved(w:Window) {
     super.onItemRemoved(w);
-    delete this.windowClass[w.hash()];    
+    let key = w.hash();
+    let cls =  this.windowClass[key];
+    
+    if (this.grouped[cls.target] && this.grouped[cls.target][cls.id]) {
+      this.grouped[cls.target][cls.id].windows = 
+        this.grouped[cls.target][cls.id].windows.filter(w2 => w2.hash() !== key)
+    } 
   }
   
   toggleFullScreen(w:Window = null) {
@@ -39,15 +50,5 @@ export default class WindowManager extends BaseItemed<Window> {
     }
     w.setTopLeft(size);
     w.setSize(size);
-  }
-    
-  groupedByClassification():Named<Named<ClassifiedAssign>> {
-    let mapping:Named<Named<ClassifiedAssign>> = {}
-    Object.forEach(this.windowClass, (cls:Classification, id:number) => {
-      mapping[cls.target] = mapping[cls.target] || {};
-      mapping[cls.target][cls.id] = mapping[cls.target][cls.id] || { cls : cls, windows : [] };
-      mapping[cls.target][cls.id].windows.push(this.items[id]);
-    });    
-    return mapping;
   }
 }
