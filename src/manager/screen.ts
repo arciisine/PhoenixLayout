@@ -23,6 +23,7 @@ export default class ScreenManager extends BaseItemed<Screen> {
   }  
   
   onItemAdded(s:Screen) {
+    Phoenix.notify(`${s.hash()}`);
     super.onItemAdded(s);
     let mon = this.findMonitor(s);
     if (mon != null) {
