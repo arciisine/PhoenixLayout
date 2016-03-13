@@ -38,13 +38,18 @@ export default class LayoutManager  extends Base {
   
   select(activeScreens:Named<Screen>) {
     let layout = this.detectLayout(Object.keys(activeScreens));
-    this.activate(layout, activeScreens);
+    if (layout) {
+      this.activate(layout, activeScreens);
+    } else {
+      this.notify("Layout not found");
+    }
   }
   
-  layout(mapping:Named<Named<ClassifiedAssign>>) {     
+  layout(mapping:Named<Named<ClassifiedAssign>>) {
     Object.forEach(mapping, (byTarget:Named<ClassifiedAssign>, target) => {
       Object.forEach(byTarget, (assign:ClassifiedAssign, id) => {
         this.active.forEach(layout => {
+          this.notify(assign.cls +" " +assign.windows.length);
           layout.layout(assign.cls, assign.windows);
         });
       })

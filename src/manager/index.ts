@@ -23,16 +23,22 @@ export default class Manager extends Base {
     });
     
     this.windows.on("change", () => this.layout);
-    this.layouts.on("activated", name => this.message(`Activating: ${name}`));
+    this.layouts.on("activated", name => {
+      this.message(`Activating: ${name}`)
+      this.layout();
+    });
     
-    this.onPhoenixKey(".",  [Modifier.cmd, Modifier.shift], () => this.layout());        
+    this.onPhoenixKey(".",  [Modifier.cmd, Modifier.shift], () => {
+      this.notify("Manual layout");
+      this.layout();      
+    })        
     this.onPhoenixKey("up", [Modifier.cmd, Modifier.shift], () => this.windows.toggleFullScreen())
             
     this.screens.sync();
     this.windows.sync();
   }
      
-  layout() {   
+  layout() {
     this.layouts.layout(this.windows.groupedByClassification());
   }
 }
