@@ -4,8 +4,8 @@ let APP = './build/phoenix.js';
 let OUT = process.env.HOME + '/.phoenix.js';
 
 function register(window) {
-  var loaded = { require : function() {} };
-  var registry = { require : [] };
+  var loaded = { _req : function() {} };
+  var registry = { _req : [] };
   
   function register(name, deps, cb) {
     registry[name] = [deps, cb];
@@ -37,30 +37,28 @@ function register(window) {
   var noop = function() {}
   window.console.debug = noop; //window.console.log;
   window.console.error = window.console.log;
-  if (window.require) {
-    window.require_ = window.require;
-  }
-  window.require = imp
+  window._req = imp
   window.define = register;
   window.module = { exports : {} };
 }
 
-function init(req) {
-  req(['index'], function(app) { new app.default(); });;
+function init(_req) {
+  require('./.phoenix.config.js')
+  _req(['index'], function(app) { new app.default(); });
 }
 
 //Compile
 child_process.execSync(`./node_modules/.bin/tsc -p . --outFile ${APP}`);
 
 //Read
-let source = fs.readFileSync(APP);
-//fs.unlinkSync(APP);
+var source = fs.readFileSync(APP).toString()
 
-try { fs.mkdirSync('src/js'); } catch(e) {}
+source = source
+  .replace(/require/g, '_req')
 
 //Final
 fs.writeFileSync(OUT, 
 `register(this); 
 ${source}; 
-init(this.require); 
+init(this._req); 
 ${[init, register].map(x=>x.toString()).join(';\n')}`);

@@ -65,6 +65,8 @@ declare interface Configuration {
   layouts : Named<Named<ScreenLayoutExternal>>
 }
 
+declare var phoenixConfig:Configuration
+
 declare interface ClassifiedAssign {
   cls:Classification, windows:Window[]
 }
