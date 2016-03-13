@@ -46,21 +46,5 @@ export default class ScreenManager extends BaseItemed<Screen> {
       }
     }
     return null;
-  }
-  
-  isMatching(screens:string[]):boolean {
-    let activeScreenKeys = Object.keys(this.byName);      
-    
-    let count = activeScreenKeys.length;
-  
-    if (count !== screens.length) {
-      return false;
-    }
-    
-    screens.forEach(name => {
-      count -= (activeScreenKeys.indexOf(name) >= 0 ? 1 : 0);
-    })
-    
-    return count === 0;
-  }
+  }  
 }

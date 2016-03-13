@@ -1,5 +1,5 @@
 /// <reference path="../typings/layout.d.ts" />
-import Base from '../base';
+import {Base} from '../base';
 
 export default class ScreenLayout extends Base {
   screen:Screen;
