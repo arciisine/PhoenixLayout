@@ -17,7 +17,7 @@ export default class Manager extends Base {
     this.layouts = new LayoutManager(config.layouts);
     
     this.screens.on("change", () => {
-      this.selectLayout();
+      this.layouts.select(this.screens.byName)
       this.layout()
     });
     
@@ -31,10 +31,6 @@ export default class Manager extends Base {
     this.windows.sync();
   }
      
-  selectLayout() {    
-    this.layouts.select(this.screens.byName)
-  }
-  
   layout() {   
     this.layouts.layout(this.windows.classifyAndGroup());
   }

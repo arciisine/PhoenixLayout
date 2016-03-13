@@ -11,52 +11,40 @@ export default class LayoutManager  extends Base {
     }));
   }
 
-  layouts:Named<ScreenLayout[]>
-  activeLayout:ScreenLayout[];
+  items:Named<ScreenLayout[]>
+  active:ScreenLayout[];
 
   constructor(layouts:Named<Named<ScreenLayoutExternal>>) {
     super()
-    this.layouts = Object.map(layouts, (l,name) => LayoutManager.parse(name, l));
+    this.items = Object.map(layouts, (l,name) => LayoutManager.parse(name, l));
   }
-  
-  isMatching(toCheck:string[], screens:Named<Screen>):boolean {
-    let activeScreenKeys = Object.keys(screens);      
-    
-    let count = activeScreenKeys.length;
-  
-    if (count !== toCheck.length) {
-      return false;
-    }
-    
-    toCheck.forEach(name => {
-      count -= (activeScreenKeys.indexOf(name) >= 0 ? 1 : 0);
-    })
-    
-    return count === 0;
-  }
-  
-  select(screens:Named<Screen>) {
-     for (var l in this.layouts) {
-      let screenNames = this.layouts[l].map(s => s.name);
-      if (this.isMatching(screenNames, screens)) {
-        this.activate(l, screens);
-        return;
+       
+  detectLayout(activeScreenNames:string[]):string {
+     for (var l in this.items) {
+      let screenNames = this.items[l].map(s => s.name);
+      if (screenNames.matches(activeScreenNames)) {
+        return l
       }
     }
   }
   
-  activate(name:string, screens:Named<Screen>) {
-    this.activeLayout = this.layouts[name];
-    this.activeLayout.forEach(l => {
-      l.screen = screens[l.name];
+  activate(layout:string, activeScreens:Named<Screen>) {
+    this.active = this.items[layout];
+    this.active.forEach(l => {
+      l.screen = activeScreens[l.name];
     });
-    this.dispatchEvent("activated", name);
+    this.dispatchEvent("activated", layout);
+  }
+  
+  select(activeScreens:Named<Screen>) {
+    let layout = this.detectLayout(Object.keys(activeScreens));
+    this.activate(layout, activeScreens);
   }
   
   layout(mapping:Named<Named<ClassifiedAssign>>) {     
     Object.forEach(mapping, (byTarget:Named<ClassifiedAssign>, target) => {
       Object.forEach(byTarget, (assign:ClassifiedAssign, id) => {
-        this.activeLayout.forEach(layout => {
+        this.active.forEach(layout => {
           layout.layout(assign.cls, assign.windows);
         });
       })

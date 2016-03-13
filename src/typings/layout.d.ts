@@ -24,6 +24,10 @@ declare interface ObjectConstructor {
   forEach<T>(o:Numbered<T>, fn:(T,number)=>void):void;
 }
 
+declare interface Array<T> {
+  matches(others:T[]):boolean;
+}
+
 declare interface Math {
   max(...a:number[]):number 
 }

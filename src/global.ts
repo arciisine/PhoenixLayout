@@ -15,3 +15,17 @@ Object.map = function<T,U>(o:Object, fn:(T,any)=>U):Object {
 Object.forEach = function<T>(o:Named<T>, fn:(T,any)=>void):void {
   for (let k in o) fn(o[k], k);
 }
+
+Array.prototype.matches = function<T>(others:T[]):boolean {
+  let count = others.length;
+
+  if (count !== this.length) {
+    return false;
+  }
+  
+  let self = {};
+  others.forEach(el => { self[`${el}`] = true; })  
+  this.forEach(name => count -= (self[name] >= 0 ? 1 : 0));
+    
+  return count === 0;
+}
