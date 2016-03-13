@@ -1,5 +1,7 @@
 /// <reference path="../typings/layout.d.ts" />
-export default class ClassificationManager {
+import Base from '../base';
+
+export default class ClassificationManager extends Base {
   static id:number = 0;
   static toRegExp(o):RegExp {
     return o instanceof RegExp ? o : new RegExp('^'+o+'.*$', 'i')
@@ -26,6 +28,7 @@ export default class ClassificationManager {
   classesMap:Named<Classification>
   
   constructor(classes:Named<ClassificationExternal[]>) {
+    super()
     this.classesMap = {};
     this.classes = Object.map(classes, (x,target) => ClassificationManager.parse(target, x));
     Object.forEach(this.classes, (cls:Classification[], name) => {
@@ -58,12 +61,12 @@ export default class ClassificationManager {
       let cls = this.classify(w);
       let app = w.app().name();
       if (cls) {
-        Phoenix.notify(`Mapping for: ${app} - ${w.title()} - ${cls.target}`)
+        this.notify(`Mapping for: ${app} - ${w.title()} - ${cls.target}`)
         mapping[cls.target] = mapping[cls.target] || {};
         mapping[cls.target][cls.id] = mapping[cls.target][cls.id] || { cls : cls, windows : [] };
         mapping[cls.target][cls.id].windows.push(w);
       } else {
-        Phoenix.notify(`No mapping for: ${app} - ${w.title()}`)
+        this.notify(`No mapping for: ${app} - ${w.title()}`)
       }
     });
     

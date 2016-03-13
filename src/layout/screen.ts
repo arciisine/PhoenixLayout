@@ -1,6 +1,7 @@
 /// <reference path="../typings/layout.d.ts" />
+import Base from '../base';
 
-export default class ScreenLayout {
+export default class ScreenLayout extends Base {
   screen:Screen;
   units:Size
   padding:number = 0;
@@ -8,6 +9,8 @@ export default class ScreenLayout {
   name:string;
 
   constructor(cfg:ScreenLayoutExternal) {
+    super()
+    
     let items = cfg.format.trim().split('\n').map(x => x.trim().split(''));
     this.units = {width:items[0].length, height: items.length }
     this.cells = {};

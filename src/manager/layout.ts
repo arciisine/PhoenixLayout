@@ -1,6 +1,7 @@
 import ScreenLayout from '../layout/screen';
+import Base from '../base';
 
-export default class LayoutManager {
+export default class LayoutManager  extends Base {
 
   static parse(name:string, config:Named<ScreenLayoutExternal>):ScreenLayout[] {  
     return Object.values(Object.map(config, (conf, name) => {
@@ -14,6 +15,7 @@ export default class LayoutManager {
   activeLayout:ScreenLayout[];
 
   constructor(layouts:Named<Named<ScreenLayoutExternal>>) {
+    super()
     this.layouts = Object.map(layouts, (l,name) => LayoutManager.parse(name, l));
   }
   

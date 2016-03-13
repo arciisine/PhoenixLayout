@@ -1,18 +1,18 @@
 import ScreenManager from './screen';
 import ClassificationManager from './classification';
 import LayoutManager from './layout';
+import Base from '../base';
 
-export default class Manager {
+export default class Manager extends Base {
   screens:ScreenManager
   classes:ClassificationManager
   layouts:LayoutManager
   
-  private handlers:EventHandler[] = [];
-  private keyHandlers:KeyHandler[] = [];
   private previousSizes:{[key:number]:Rectangle} = {}
 
   constructor(config:Configuration) {
-    Phoenix.notify("Started");
+    super()
+    this.notify("Started");
 
     this.screens = new ScreenManager(config.screens);
     this.classes = new ClassificationManager(config.classes);
@@ -20,10 +20,13 @@ export default class Manager {
     
     //this.handlers.push(Phoenix.on('windowDidOpen', w => this.windowAdded(w)));
     //this.handlers.push(Phoenix.on('windowDidUnminimize', w => this.windowAdded(w)));
-    this.handlers.push(Phoenix.on("screensDidChange", () => this.screensChanged()));
-    this.keyHandlers.push(Phoenix.bind(".", ['cmd', 'shift'], () => this.layout()))
-    this.keyHandlers.push(Phoenix.bind("up", ['cmd', 'shift'], () => this.toggleFullScreen()))
+    this.screens.on("change", () => this.layout());
     
+    this.onPhoenixKey(".", ['cmd', 'shift'], () => {
+      this.notify("Relayout called on keypress")
+      this.layout()
+    })
+    this.onPhoenixKey("up", ['cmd', 'shift'], () => this.toggleFullScreen())
     this.layout();
   }
   
@@ -45,8 +48,7 @@ export default class Manager {
     this.layout();
   }
   
-  screensChanged() {
-    Phoenix.notify(`Screens changed`);
+  screensChanged() {        
     this.layout();
   }
   
@@ -56,7 +58,7 @@ export default class Manager {
       let screens = this.layouts.layouts[l];
       let screenNames = screens.map(s => s.name);
       if (this.screens.isMatching(screenNames)) {
-        message(`Activating: ${l}`);
+        this.message(`Activating: ${l}`);
         this.layouts.activate(l, this.screens.activeScreens);
         return;
       }

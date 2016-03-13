@@ -1,12 +1,14 @@
 /// <reference path="../typings/layout.d.ts" />
+import Base from '../base';
 
-export default class ScreenManager {
+export default class ScreenManager extends Base {
   activeScreens:Named<Screen>;  
-  handlers:EventHandler[] = [];
+  activeScreenIds:{[key:number]:Screen} = {}
     
   constructor(public screens:Named<Monitor>) {
+    super()
     Object.forEach(screens, (p,name) => { p.name = name; })
-    //this.handlers.push(Phoenix.on("screensDidChange", () => this.sync()));  
+    this.onPhoenixEvent("screensDidChange", () => this.sync());  
   }
   
   isMatching(screens:string[]):boolean {
@@ -25,9 +27,26 @@ export default class ScreenManager {
   }
     
   sync() {
+    let ids = this.activeScreenIds;
+    this.activeScreenIds = {};
+    let changed = false;
+    
+    Screen.screens().forEach(sc => {
+      let key = sc.hash();
+      changed = changed || !ids[key]; //Added
+      this.activeScreenIds[key] = sc;
+      delete ids[key]
+    })
+    
+    changed = changed || Object.keys(ids).length > 0;
+    
+    if (!changed) {
+      return;
+    } 
+    
     let screens:Monitor[] = Object.values(this.screens);
     
-    this.activeScreens = {};
+    this.activeScreens = {};  
    
     Screen.screens().forEach(sc => {
       let rect = sc.frameInRectangle()
@@ -37,5 +56,8 @@ export default class ScreenManager {
         this.activeScreens[mon.name] = sc;
       }
     });
+    
+    this.notify(`Screens changed`);
+    this.dispatchEvent("changed", this.activeScreens);
   }
 }

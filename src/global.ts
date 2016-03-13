@@ -15,10 +15,3 @@ Object.map = function<T,U>(o:Named<T>, fn:(T,string)=>U):Named<U> {
 Object.forEach = function<T>(o:Named<T>, fn:(T,string)=>void):void {
   for (let k in o) fn(o[k], k);
 }
-
-function message(msg) {
-  let m = new Modal();
-  m.message = msg
-  m.duration = 5
-  m.show()
-}

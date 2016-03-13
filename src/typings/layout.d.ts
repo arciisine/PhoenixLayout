@@ -2,6 +2,8 @@
 
 declare type Cell = string;
 
+declare type Listener = (e:any) => void
+
 declare interface Named<T> {
   [name:string]:T
 }
