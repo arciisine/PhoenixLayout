@@ -7,11 +7,36 @@ export default class ScreenManager extends BaseItemed<Screen> {
     return `${rc.width}x${rc.height}`
   }
   
+  byName:Named<Screen> = {};
+  
   constructor(public screens:Named<Monitor>) {
     super()
     Object.forEach(screens, (p,name) => { p.name = name; })
     this.onPhoenixEvent("screensDidChange", () => this.sync());
   }
+    
+  sync() {
+    this.notify("Attempting to sync displays");
+    if (this.syncItems(Screen.screens())) {
+      this.notify(`Screens changed`);
+    }
+  }  
+  
+  onItemAdded(s:Screen) {
+    super.onItemAdded(s);
+    let mon = this.findMonitor(s);
+    if (mon != null) {
+      this.byName[mon.name] = s; 
+    }
+  } 
+  
+  onItemRemoved(s:Screen) {
+    super.onItemAdded(s);
+    let mon = this.findMonitor(s);
+    if (mon != null) {
+      delete this.byName[mon.name]; 
+    }
+  } 
     
   findMonitor(sc:Screen):Monitor {
     let key = ScreenManager.buildKey(sc);
@@ -24,9 +49,8 @@ export default class ScreenManager extends BaseItemed<Screen> {
   }
   
   isMatching(screens:string[]):boolean {
-    let activeScreenKeys = Object.keys(this.state)
-      .map(id => this.findMonitor(this.state[id]).name);
-      
+    let activeScreenKeys = Object.keys(this.byName);      
+    
     let count = activeScreenKeys.length;
   
     if (count !== screens.length) {
@@ -38,12 +62,5 @@ export default class ScreenManager extends BaseItemed<Screen> {
     })
     
     return count === 0;
-  }
-    
-  sync() {
-    this.notify("Attempting to sync displays");
-    if (this.syncItems(Screen.screens())) {
-      this.notify(`Screens changed`);
-    }
   }
 }

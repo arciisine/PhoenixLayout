@@ -1,11 +1,11 @@
 import ScreenManager from './screen';
-import ClassificationManager from './classification';
+import WindowManager from './window';
 import LayoutManager from './layout';
 import {Base,Modifier} from '../base';
 
 export default class Manager extends Base {
   screens:ScreenManager
-  classes:ClassificationManager
+  windows:WindowManager
   layouts:LayoutManager
   
   private previousSizes:Numbered<Rectangle> = {}
@@ -15,22 +15,20 @@ export default class Manager extends Base {
     this.notify("Started");
 
     this.screens = new ScreenManager(config.screens);
-    this.classes = new ClassificationManager(config.classes);
+    this.windows = new WindowManager(config.classes);
     this.layouts = new LayoutManager(config.layouts);
-    
-    this.onPhoenixEvent("windowDidOpen windowDidUnminimize", (w:Window) => {
-      if (w.isNormal() && w.isVisible()) this.layout();
-    });
     
     this.screens.on("change", () => {
       this.selectLayout();
       this.layout()
     });
+    this.windows.on("change", () => this.layout);
     
     this.onPhoenixKey(".",  [Modifier.cmd, Modifier.shift], () => this.layout());        
     this.onPhoenixKey("up", [Modifier.cmd, Modifier.shift], () => this.toggleFullScreen())
-       
+            
     this.screens.sync();
+    this.windows.sync();
   }
   
   toggleFullScreen(w:Window = null) {
@@ -54,21 +52,13 @@ export default class Manager extends Base {
       let screenNames = screens.map(s => s.name);
       if (this.screens.isMatching(screenNames)) {
         this.message(`Activating: ${l}`);
-        this.layouts.activate(l, this.screens.items);
+        this.layouts.activate(l, this.screens.byName);
         return;
       }
     }
   }
   
   layout() {   
-    let mapping = this.classes.classifyAndGroup(Window.visibleWindows());
-    
-    Object.forEach(mapping, (byTarget:Named<ClassifiedAssign>, target) => {
-      Object.forEach(byTarget, (assign:ClassifiedAssign, id) => {
-        this.layouts.activeLayout.forEach(layout => {
-          layout.layout(assign.cls, assign.windows);
-        });
-      })
-    })
+    this.layouts.layout(this.windows.classifyAndGroup());
   }
 }

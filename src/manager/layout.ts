@@ -25,4 +25,14 @@ export default class LayoutManager  extends Base {
       l.screen = screens[l.name];
     });
   }
+  
+  layout(mapping:Named<Named<ClassifiedAssign>>) {     
+    Object.forEach(mapping, (byTarget:Named<ClassifiedAssign>, target) => {
+      Object.forEach(byTarget, (assign:ClassifiedAssign, id) => {
+        this.activeLayout.forEach(layout => {
+          layout.layout(assign.cls, assign.windows);
+        });
+      })
+    })
+  }
 }
