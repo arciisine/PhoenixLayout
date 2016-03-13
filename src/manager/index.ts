@@ -17,21 +17,14 @@ export default class Manager extends Base {
     this.windows = new WindowManager(new Classifier(config.classes));
     this.layouts = new LayoutManager(config.layouts);
     
-    this.screens.on("change", () => {
-      this.layouts.select(this.screens.byName)
-      this.layout()
-    });
-    
-    this.windows.on("change", () => this.layout);
+    this.screens.on("changed", () => this.layouts.select(this.screens.byName));    
+    this.windows.on("changed", () => this.layout());
     this.layouts.on("activated", name => {
       this.message(`Activating: ${name}`)
       this.layout();
     });
     
-    this.onPhoenixKey(".",  [Modifier.cmd, Modifier.shift], () => {
-      this.notify("Manual layout");
-      this.layout();      
-    })        
+    this.onPhoenixKey(".",  [Modifier.cmd, Modifier.shift], () => this.layout())        
     this.onPhoenixKey("up", [Modifier.cmd, Modifier.shift], () => this.windows.toggleFullScreen())
             
     this.screens.sync();

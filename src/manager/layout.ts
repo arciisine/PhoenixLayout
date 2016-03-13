@@ -49,7 +49,6 @@ export default class LayoutManager  extends Base {
     Object.forEach(mapping, (byTarget:Named<ClassifiedAssign>, target) => {
       Object.forEach(byTarget, (assign:ClassifiedAssign, id) => {
         this.active.forEach(layout => {
-          this.notify(assign.cls +" " +assign.windows.length);
           layout.layout(assign.cls, assign.windows);
         });
       })
