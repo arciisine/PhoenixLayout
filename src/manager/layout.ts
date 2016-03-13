@@ -19,7 +19,7 @@ export default class LayoutManager  extends Base {
     this.items = Object.map(layouts, (l,name) => LayoutManager.parse(name, l));
   }
        
-  detectLayout(activeScreenNames:string[]):string {
+  detect(activeScreenNames:string[]):string {
      for (var l in this.items) {
       let screenNames = this.items[l].map(s => s.name);
       if (screenNames.matches(activeScreenNames)) {
@@ -37,7 +37,7 @@ export default class LayoutManager  extends Base {
   }
   
   select(activeScreens:Named<Screen>) {
-    let layout = this.detectLayout(Object.keys(activeScreens));
+    let layout = this.detect(Object.keys(activeScreens));
     if (layout) {
       this.activate(layout, activeScreens);
     } else {
