@@ -29,14 +29,15 @@ export default class LayoutManager  extends Base {
     }
   }
   
-  activate(layout:string, activeScreens:Named<Screen>) {    
+  activate(layout:string, activeScreens:Named<Screen>) {
+    this.notify(`Attempting to transition from ${layout} to ${this.activeName}`);    
     this.active = this.items[layout];
     this.active.forEach(l => {
       l.screen = activeScreens[l.name];
     });
     if (layout !== this.activeName) {
       this.activeName = layout;   
-      this.dispatchEvent("activated", layout);
+      this.dispatchEvent("changed", layout);
     }
   }
   

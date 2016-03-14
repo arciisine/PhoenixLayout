@@ -33,6 +33,8 @@ export default class WindowManager extends BaseItemed<Window> {
       this.grouped[cls.target][cls.id].windows = 
       this.grouped[cls.target][cls.id].windows.filter(w2 => w2.hash() !== key)
     } 
+    
+    delete this.windowClass[key];
   }
   
   reclassifyItem(w:Window) {
@@ -41,7 +43,10 @@ export default class WindowManager extends BaseItemed<Window> {
   }
   
   reclassifyItems() {
-    Object.forEach(this.items, (w, id) => this.reclassifyItem(w))
+    this.windowClass = {};
+    this.grouped = {};
+    this.items = {};
+    this.sync();
   }
   
   onItemAdded(w:Window) {

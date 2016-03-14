@@ -23,7 +23,6 @@ export default class ScreenManager extends BaseItemed<Screen> {
   }  
   
   onItemAdded(s:Screen) {
-    Phoenix.notify(`Added ${s.hash()}`);
     super.onItemAdded(s);
     let mon = this.findMonitor(s);
     if (mon != null) {
@@ -32,8 +31,7 @@ export default class ScreenManager extends BaseItemed<Screen> {
   } 
   
   onItemRemoved(s:Screen) {
-    Phoenix.notify(`Removed ${s.hash()}`);
-    super.onItemAdded(s);
+    super.onItemRemoved(s);
     let mon = this.findMonitor(s);
     if (mon != null) {
       delete this.byName[mon.name]; 
