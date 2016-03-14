@@ -33,7 +33,7 @@ export default class WindowManager extends BaseItemed<Window> {
     
     if (cls && this.grouped[cls.target] && this.grouped[cls.target][cls.id]) {
       this.grouped[cls.target][cls.id].windows = 
-      this.grouped[cls.target][cls.id].windows.filter(w2 => w2.hash() !== key)
+        this.grouped[cls.target][cls.id].windows.filter(w2 => w2.hash() !== key)
     } 
     
     delete this.windowClass[key];
@@ -45,10 +45,12 @@ export default class WindowManager extends BaseItemed<Window> {
   }
   
   reclassifyItems() {
-    this.windowClass = {};
-    this.grouped = {};
-    this.items = {};
-    this.sync();
+    Object.forEach(this.items, (w:Window, k:number) => {
+      if (this.windowClass[k] !== this.classifications.classify(w)) {
+        this.ungroupItem(w);
+        this.groupItem(w);
+      }
+    });
   }
   
   onItemAdded(w:Window) {
@@ -66,11 +68,12 @@ export default class WindowManager extends BaseItemed<Window> {
       w = Window.focusedWindow();
     }
     let size = w.screen().visibleFrameInRectangle();
-    if (this.previousSizes[w.hash()]) {
-      size = this.previousSizes[w.hash()];
-      delete this.previousSizes[w.hash()];
+    let key = w.hash()
+    if (this.previousSizes[key]) {
+      size = this.previousSizes[key];
+      delete this.previousSizes[key];
     } else {
-      this.previousSizes[w.hash()] = w.frame()
+      this.previousSizes[key] = w.frame()
     }
     w.setTopLeft(size);
     w.setSize(size);
