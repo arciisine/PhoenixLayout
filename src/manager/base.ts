@@ -20,13 +20,27 @@ export abstract class Base {
     m.show()
   } 
   
+  makeHandler(fn:(e?:any)=>void):(e?:any)=>void {
+    return (...a:any[]) => {
+        try {
+          fn.apply(null, a)
+        } catch (err) {
+          this.notify(err);
+        }
+      }
+  }
+  
   onPhoenixEvent(ev:string, fn:(e?:any)=>void) {
     ev.split(' ').forEach(e => 
-      this.handlers.push(Phoenix.on(e, fn)));
+      this.handlers.push(Phoenix.on(e, this.makeHandler(fn))));
   }
   
   onPhoenixKey(key:string, modifiers:Modifier[], fn:()=>void) {
-    this.keyHandlers.push(Phoenix.bind(key, modifiers.map(x => Modifier[x]), fn));
+    this.keyHandlers.push(Phoenix.bind(
+      key,
+      modifiers.map(x => Modifier[x]), 
+      this.makeHandler(fn)
+    ));
   }  
 
   on(key:string, listener:Listener) {
