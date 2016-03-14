@@ -47,7 +47,7 @@ export abstract class Base {
     if (!this.listeners[key]) {
       this.listeners[key] = [];
     }
-    this.listeners[key].push(listener);
+    this.listeners[key].push(this.makeHandler(listener));
   }
   
   dispatchEvent(key:string, e:any = null) {

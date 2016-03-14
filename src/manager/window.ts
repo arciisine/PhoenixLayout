@@ -20,16 +20,18 @@ export default class WindowManager extends BaseItemed<Window> {
   
   groupItem(w:Window) {
     let cls = this.windowClass[w.hash()] = this.classifications.classify(w);
-    let l1 = this.grouped[cls.target] = this.grouped[cls.target] || {};
-    let l2 = l1[cls.id] = l1[cls.id] || { cls : cls, windows : [] };
-    l2.windows.push(w);
+    if (cls) {
+      let l1 = this.grouped[cls.target] = this.grouped[cls.target] || {};
+      let l2 = l1[cls.id] = l1[cls.id] || { cls : cls, windows : [] };
+      l2.windows.push(w);
+    }
   }
   
   ungroupItem(w:Window) {
     let key = w.hash();
     let cls = this.windowClass[key];
     
-    if (this.grouped[cls.target] && this.grouped[cls.target][cls.id]) {
+    if (cls && this.grouped[cls.target] && this.grouped[cls.target][cls.id]) {
       this.grouped[cls.target][cls.id].windows = 
       this.grouped[cls.target][cls.id].windows.filter(w2 => w2.hash() !== key)
     } 
