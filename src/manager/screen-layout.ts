@@ -50,10 +50,11 @@ export default class ScreenLayout extends Base {
     if (!cell) return false; // DO nothing if it doesn't match
     
     //Remove fullscreen windows from layout, along with super small windows
-    windows = windows.filter(w => 
+    windows = windows.filter(w =>
+      w.isNormal() &&  
       !w.isFullScreen() && 
-        w.size().width > ScreenLayout.MIN_WIN_THRESHOLD && 
-        w.size().height > ScreenLayout.MIN_WIN_THRESHOLD);
+      w.size().width > ScreenLayout.MIN_WIN_THRESHOLD && 
+      w.size().height > ScreenLayout.MIN_WIN_THRESHOLD);
     
     if (windows.length > 1  && cls.tile) {
       let count = windows.length;
