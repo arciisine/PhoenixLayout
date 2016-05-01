@@ -5,7 +5,6 @@ import ClassificationManager from './classification';
 export default class WindowManager extends BaseItemed<Window> {
 
   windowClass:Numbered<Classification> = {}
-  previousSizes:Numbered<Rectangle> = {}
   grouped:Named<Named<ClassifiedAssign>> = {}
   
   constructor(public classifications:ClassificationManager) {
@@ -67,15 +66,6 @@ export default class WindowManager extends BaseItemed<Window> {
     if (w === null) {
       w = Window.focusedWindow();
     }
-    let size = w.screen().visibleFrameInRectangle();
-    let key = w.hash()
-    if (this.previousSizes[key]) {
-      size = this.previousSizes[key];
-      delete this.previousSizes[key];
-    } else {
-      this.previousSizes[key] = w.frame()
-    }
-    w.setTopLeft(size);
-    w.setSize(size);
+    w.setFullScreen(!w.isFullScreen()) 
   }
 }

@@ -83,6 +83,7 @@ declare class Window implements Identifiable {
   setTopLeft(point:Point):boolean
   setSize(size:Size):boolean
   setFrame(frame:Rectangle):boolean
+  setFullScreen(state:boolean):void
   maximize():boolean
   minimize():boolean
   unminimize():boolean
@@ -179,5 +180,5 @@ declare class Phoenix {
   
   static after(interval:number, callback:()=>void):TimerHandler; 
   static every(interval:number, callback:()=>void):TimerHandler;
-  static set(preferences:{[key:String]:any}):void
+  static set(preferences:{[key:string]:any}):void
 }

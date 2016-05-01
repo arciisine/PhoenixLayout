@@ -2,6 +2,8 @@
 import {Base} from './base';
 
 export default class ScreenLayout extends Base {
+  static MIN_WIN_THRESHOLD = 300
+  
   screen:Screen;
   units:Size
   padding:number = 0;
@@ -46,6 +48,12 @@ export default class ScreenLayout extends Base {
     let py = this.padding;
     let cell = this.cells[cls.target];
     if (!cell) return false; // DO nothing if it doesn't match
+    
+    //Remove fullscreen windows from layout, along with super small windows
+    windows = windows.filter(w => 
+      !w.isFullScreen() && 
+        w.size().width > ScreenLayout.MIN_WIN_THRESHOLD && 
+        w.size().height > ScreenLayout.MIN_WIN_THRESHOLD);
     
     if (windows.length > 1  && cls.tile) {
       let count = windows.length;
