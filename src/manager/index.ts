@@ -27,9 +27,9 @@ export default class Manager extends Base {
     });
     
     this.onPhoenixKey(".",     [Modifier.cmd, Modifier.shift], () => this.refresh())        
-    this.onPhoenixKey("up",    [Modifier.cmd, Modifier.shift], () => this.windows.toggleFullScreen())
-    this.onPhoenixKey("right", [Modifier.cmd, Modifier.shift], () => this.message(this.layouts.activeName))
-    this.onPhoenixKey("down",  [Modifier.cmd, Modifier.shift], () => {
+    this.onPhoenixKey("'",    [Modifier.cmd, Modifier.shift], () => this.windows.toggleFullScreen())
+    this.onPhoenixKey("l", [Modifier.cmd, Modifier.shift], () => this.message(this.layouts.activeName))
+    this.onPhoenixKey("\\",  [Modifier.cmd, Modifier.shift], () => {
       let w = Window.focusedWindow()
       this.windows.reclassifyItem(w);
       this.layoutSingle(w)

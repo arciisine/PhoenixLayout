@@ -1,39 +1,46 @@
 /// <reference path="../../node_modules/typescript/lib/lib.core.es6.d.ts" />
-declare class Size {
+declare interface Size {
   width:number;
   height:number;
 }
 
-declare class Point {
+declare interface Point {
   x:number;
   y:number;
 }
 
-declare class Rectangle implements Size,Point {
+declare interface Rectangle extends Size,Point {
   width:number;
   height:number;
   x:number;
   y:number;
 }
 
-declare class Identifiable {
+declare interface Identifiable {
   hash():number;
   // isEqual(o:any):boolean;
 }
 
-declare class KeyHandler implements Identifiable {
+declare interface PIterable<T> {
+  next():T;
+  previous():T;
+}
+
+declare interface KeyHandler extends Identifiable {
   key:string;
   modifiers:string[]
 
-  hash():number
   isEnabled():boolean
   enable():boolean
   disable():boolean
 }
 
-declare class EventHandler implements Identifiable {
+declare interface EventHandler extends Identifiable {
   name:string;
-  hash():number
+}
+
+declare interface TimerHandler extends Identifiable {
+  stop():void
 }
 
 declare class Modal implements Identifiable {
@@ -64,10 +71,12 @@ declare class Window implements Identifiable {
   title():string
   isMain():boolean
   isNormal():boolean
+  isFullScreen():boolean
   isMinimized():boolean
   isVisible():boolean
   app():App
   screen():Screen
+  spaces():Space[]
   topLeft():Point
   size():Size
   frame():Rectangle
@@ -88,12 +97,26 @@ declare class Window implements Identifiable {
   focusClosestWindowInSouth():boolean
 }
 
-declare class Screen implements Identifiable {
+declare class Space implements Identifiable, PIterable<Space> {
+  previous():Space
+  next():Space
+  hash():number
+  isNormal():boolean 
+  isFullScreen():boolean 
+  screen():Screen 
+  windows():Window[]
+  visibleWindows():Window[] 
+  addWindows(Awindows:Window[])
+  removeWindows(windows:Window[])
+}
+
+declare class Screen implements Identifiable, PIterable<Screen> {
 
   static mainScreen():Screen
   static screens():Screen[]
 
   hash():number
+  spaces():Space[]
   frameInRectangle():Rectangle 
   visibleFrameInRectangle():Rectangle 
   next():Screen
@@ -136,6 +159,7 @@ declare class Phoenix {
   static reload();
   static bind(key:string, modifiers:string[], callback:()=>void):KeyHandler;
   static on(event:string, callback:()=>void):EventHandler;
+  static on(string:"spacdDidChange", callback:()=>void):EventHandler;
   static on(string:"screensDidChange", callback:()=>void):EventHandler;
   static on(string:"appDidLaunch", callback:(app:App)=>void):EventHandler;
   static on(string:"appDidTerminate", callback:(app:App)=>void):EventHandler;
@@ -152,4 +176,8 @@ declare class Phoenix {
   
   static log(message:string);
   static notify(message:string);
+  
+  static after(interval:number, callback:()=>void):TimerHandler; 
+  static every(interval:number, callback:()=>void):TimerHandler;
+  static set(preferences:{[key:String]:any}):void
 }
