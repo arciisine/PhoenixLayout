@@ -12,7 +12,7 @@ export default class Manager extends Base {
   
   constructor(config:Configuration) {
     super()
-    this.notify("Started");
+    this.log("Started");
 
     this.classifications = new ClassificationManager(config.classes);
     this.screens = new ScreenManager(config.screens);
@@ -45,7 +45,7 @@ export default class Manager extends Base {
   }
   
   layoutSingle(w:Window) {
-    this.notify(`Single Layout: ${w.title()}`)
+    this.log(`Single Layout: ${w.title()}`)
     this.layouts.layoutSingle(this.windows.windowClass[w.hash()], [w]);
   }
      

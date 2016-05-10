@@ -13,12 +13,12 @@ export default class ScreenManager extends BaseItemed<Screen> {
     super()
     Object.forEach(screens, (p,name) => { p.name = name; })
     this.onPhoenixEvent("screensDidChange", () => this.sync());
-    this.on('changed', () => this.notify(`Screens changed`))
+    this.on('changed', () => this.log(`Screens changed`))
   }
     
   sync() {
-    this.notify("Attempting to sync displays");
-    this.notify(`All: ${Screen.screens().map(x => x.hash()).join(' ')}`)
+    this.log("Attempting to sync displays");
+    this.log(`All: ${Screen.screens().map(x => x.hash()).join(' ')}`)
     this.syncItems(Screen.screens())
   }  
   

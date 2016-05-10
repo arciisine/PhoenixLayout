@@ -13,6 +13,10 @@ export abstract class Base {
     Phoenix.notify(msg);
   }
   
+  log(msg:string) {
+    Phoenix.log(msg);
+  }
+  
   message(msg) {
     let m = new Modal();
     m.message = msg
@@ -25,7 +29,7 @@ export abstract class Base {
         try {
           fn.apply(null, a)
         } catch (err) {
-          this.notify(err);
+          this.log(err);
         }
       }
   }

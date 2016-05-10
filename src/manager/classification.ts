@@ -47,11 +47,11 @@ export default class ClassificationManager extends Base {
       });
       
       if (found) {
-        this.notify(`Mapping for: ${app} - ${window} - ${found.target}`)      
+        this.log(`Mapping for: ${app} - ${window} - ${found.target}`)      
         return found;
       }
     }
     
-    this.notify(`No mapping for: ${app} - ${window}`)
+    this.log(`No mapping for: ${app} - ${window}`)
   }  
 }

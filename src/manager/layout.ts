@@ -30,7 +30,7 @@ export default class LayoutManager  extends Base {
   }
   
   activate(layout:string, activeScreens:Named<Screen>) {
-    this.notify(`Attempting to transition from ${layout} to ${this.activeName}`);    
+    this.log(`Attempting to transition from ${layout} to ${this.activeName}`);    
     this.active = this.items[layout];
     this.active.forEach(l => {
       l.screen = activeScreens[l.name];
@@ -46,7 +46,7 @@ export default class LayoutManager  extends Base {
     if (layout) {
       this.activate(layout, activeScreens);
     } else {
-      this.notify(`Layout not found: ${Object.keys(activeScreens)}`);
+      this.log(`Layout not found: ${Object.keys(activeScreens)}`);
     }
   }
   
