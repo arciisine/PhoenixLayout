@@ -43,11 +43,10 @@ export default class WindowManager extends BaseItemed<Window> {
     this.groupItem(w);
   }
   
-  reclassifyItems() {
+  reclassifyItems(force:boolean = false) {
     Object.forEach(this.items, (w:Window, k:number) => {
-      if (this.windowClass[k] !== this.classifications.classify(w)) {
-        this.ungroupItem(w);
-        this.groupItem(w);
+      if (force || this.windowClass[k] !== this.classifications.classify(w)) {
+        this.reclassifyItem(w);
       }
     });
   }

@@ -21,7 +21,7 @@ export default class LayoutManager  extends Base {
   }
        
   detect(activeScreenNames:string[]):string {
-     for (var l in this.items) {
+    for (var l in this.items) {
       let screenNames = this.items[l].map(s => s.name);
       if (screenNames.matches(activeScreenNames)) {
         return l

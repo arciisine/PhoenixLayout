@@ -26,10 +26,10 @@ export default class Manager extends Base {
       this.refresh();
     });
     
-    this.onPhoenixKey(".",     [Modifier.cmd, Modifier.shift], () => this.refresh())        
-    this.onPhoenixKey("'",    [Modifier.cmd, Modifier.shift], () => this.windows.toggleFullScreen())
-    this.onPhoenixKey("l", [Modifier.cmd, Modifier.shift], () => this.message(this.layouts.activeName))
-    this.onPhoenixKey("\\",  [Modifier.cmd, Modifier.shift], () => {
+    this.onPhoenixKey(".",  [Modifier.cmd, Modifier.shift], () => this.refresh())        
+    this.onPhoenixKey("'",  [Modifier.cmd, Modifier.shift], () => this.windows.toggleFullScreen())
+    this.onPhoenixKey("l",  [Modifier.cmd, Modifier.shift], () => this.message(this.layouts.activeName))
+    this.onPhoenixKey("\\", [Modifier.cmd, Modifier.shift], () => {
       let w = Window.focusedWindow()
       this.windows.reclassifyItem(w);
       this.layoutSingle(w)
@@ -40,7 +40,7 @@ export default class Manager extends Base {
   }
   
   refresh() {
-    this.windows.reclassifyItems();
+    this.windows.reclassifyItems(true);
     this.layout();
   }
   
