@@ -6,8 +6,8 @@ export enum Modifier {
 
 export abstract class Base {
   private listeners:Named<Listener[]> = {}
-  private handlers:EventHandler[] = [];
-  private keyHandlers:KeyHandler[] = [];
+  private handlers:Event[] = [];
+  private keyHandlers:Key[] = [];
 
   notify(msg:string) {
     Phoenix.notify(msg);
@@ -19,7 +19,7 @@ export abstract class Base {
   
   message(msg) {
     let m = new Modal();
-    m.message = msg
+    m.text = msg
     m.duration = 5
     m.show()
   } 
@@ -36,11 +36,11 @@ export abstract class Base {
   
   onPhoenixEvent(ev:string, fn:(e?:any)=>void) {
     ev.split(' ').forEach(e => 
-      this.handlers.push(Phoenix.on(e, this.makeHandler(fn))));
+      this.handlers.push(new Event(e, this.makeHandler(fn))));
   }
   
   onPhoenixKey(key:string, modifiers:Modifier[], fn:()=>void) {
-    this.keyHandlers.push(Phoenix.bind(
+    this.keyHandlers.push(new Key(
       key,
       modifiers.map(x => Modifier[x]), 
       this.makeHandler(fn)

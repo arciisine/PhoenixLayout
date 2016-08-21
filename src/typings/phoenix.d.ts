@@ -1,4 +1,11 @@
 /// <reference path="../../node_modules/typescript/lib/lib.core.es6.d.ts" />
+
+declare class Storage {
+  static set(key:string, value:any);
+  static get(key:string):any;
+  static remove(key:string);
+} 
+
 declare interface Size {
   width:number;
   height:number;
@@ -26,27 +33,61 @@ declare interface PIterable<T> {
   previous():T;
 }
 
-declare interface KeyHandler extends Identifiable {
+
+declare class Key implements Identifiable {
+  static on(key:string, modifiers:string[], callback:Function):number;
+  static off(identifier:number);
+
   key:string;
-  modifiers:string[]
+  modifiers:string[];
 
-  isEnabled():boolean
-  enable():boolean
-  disable():boolean
+  constructor(key:string, modifiers:string[], callback:Function);
+  hash():number;
+  isEnabled():boolean;
+  enable():boolean;
+  disable():boolean;
 }
 
-declare interface EventHandler extends Identifiable {
+declare class Event implements Identifiable {
+  static on(event:string, callback:Function):number;
+  static off(identifier:number);
+
   name:string;
+  constructor(event:string, callback:Function);
+  hash():number
+  disable():void;
 }
 
-declare interface TimerHandler extends Identifiable {
+declare class Timer implements Identifiable {
+  static after(interval:number, callback:Function):number;
+  static every(interval:number, callback:Function):number;
+  static off(identifier:number);
+
+  constructor(interval:number, repeats:boolean, callback:Function)
+  hash():number
   stop():void
+}
+
+declare class Task implements Identifiable {
+  static run(path:string, args:any[], callback:Function);
+  static terminate(identifier:number):void
+
+  status:number;
+  output:string;
+  error:string;
+
+  constructor(path:string, args:any[], callback:Function);
+  hash():number
+  terminate():void
 }
 
 declare class Modal implements Identifiable {
   origin:Point;
   duration:number;
-  message:string;
+  weight:number;
+  appearance:string;
+  icon:any;
+  text:string;
 
   hash():number
   frame():Rectangle
@@ -58,16 +99,16 @@ declare class Command {
   static run(path:string, args:any[]):boolean
 }
 
+declare type Direction = 'north'|'east'|'west'|'south';
+
 declare class Window implements Identifiable {
 
-  static focusedWindow():Window
-  static windows():Window[]
-  static visibleWindows():Window[]
-  static visibleWindowsInOrder():Window[]
+  static focusedWindow():Window;
+  static all(optionals?:{visible?:boolean}):Window[];
+  static recent():Window[];
 
   hash():number
-  otherWindowsOnSameScreen():Window[]
-  otherWindowsOnAllScreens():Window[]
+  others(optionals?:{visible?:boolean, screen?:Screen}):Window[]
   title():string
   isMain():boolean
   isNormal():boolean
@@ -84,18 +125,12 @@ declare class Window implements Identifiable {
   setSize(size:Size):boolean
   setFrame(frame:Rectangle):boolean
   setFullScreen(state:boolean):void
-  maximize():boolean
-  minimize():boolean
-  unminimize():boolean
-  windowsToWest():Window[]
-  windowsToEast():Window[]
-  windowsToNorth():Window[]
-  windowsToSouth():Window[]
+  maximise():boolean
+  minimise():boolean
+  unminimise():boolean
+  neighbours(direction:Direction):Window[]
   focus():boolean
-  focusClosestWindowInWest():boolean
-  focusClosestWindowInEast():boolean
-  focusClosestWindowInNorth():boolean
-  focusClosestWindowInSouth():boolean
+  focusClosestNeighbour(direction:Direction):boolean;
 }
 
 declare class Space implements Identifiable, PIterable<Space> {
@@ -105,25 +140,27 @@ declare class Space implements Identifiable, PIterable<Space> {
   isNormal():boolean 
   isFullScreen():boolean 
   screen():Screen 
-  windows():Window[]
-  visibleWindows():Window[] 
-  addWindows(Awindows:Window[])
+  windows(optionals?:{visible?:boolean}):Window[]
+  addWindows(windows:Window[])
   removeWindows(windows:Window[])
 }
 
 declare class Screen implements Identifiable, PIterable<Screen> {
 
-  static mainScreen():Screen
-  static screens():Screen[]
+  static main():Screen;
+  static all():Screen[];
 
   hash():number
   spaces():Space[]
-  frameInRectangle():Rectangle 
-  visibleFrameInRectangle():Rectangle 
+  currentSpace():Space
+  
+  frame():Rectangle 
+  visibleFrame():Rectangle
+  flippedFrame():Rectangle
+  flippedVisibleFrame():Rectangle
   next():Screen
   previous():Screen
-  windows():Window[]
-  visibleWindows():Window[] 
+  windows(optionals?:{visible?:boolean}):Window[]
 }
 
 declare class Mouse {
@@ -135,50 +172,29 @@ declare class App implements Identifiable {
 
   static get(appName:string):App;
   static launch(appName:string):App;
-  static focusedApp():App;
-  static runningApps():App[];
+  static focused():App;
+  static all():App[];
 
   hash():number
   processIdentifier():number;
   bundleIdentifier():string;
   name():string;
+  icon():any;
   isActive():boolean;
   isHidden():boolean;
   isTerminated():boolean;
   mainWindow():Window;
-  windows():Window[];
-  visibleWindows():Window[];
+  windows(optional?:{visible?:boolean}):Window[];
   activate():boolean;
   focus():boolean;
   show():boolean;
   hide():boolean;
-  terminate():boolean;
-  forceTerminate():boolean;
+  terminate(optional?:{force?:boolean}):boolean;
 }
-    
+
 declare class Phoenix {
   static reload();
-  static bind(key:string, modifiers:string[], callback:()=>void):KeyHandler;
-  static on(event:string, callback:()=>void):EventHandler;
-  static on(string:"spacdDidChange", callback:()=>void):EventHandler;
-  static on(string:"screensDidChange", callback:()=>void):EventHandler;
-  static on(string:"appDidLaunch", callback:(app:App)=>void):EventHandler;
-  static on(string:"appDidTerminate", callback:(app:App)=>void):EventHandler;
-  static on(string:"appDidHide", callback:(app:App)=>void):EventHandler;
-  static on(string:"appDidShow", callback:(app:App)=>void):EventHandler;
-  
-  static on(string:"windowDidOpen", callback:(window:Window)=>void):EventHandler;
-  static on(string:"windowDidClose", callback:(window:Window)=>void):EventHandler;
-  static on(string:"windowDidFocus", callback:(window:Window)=>void):EventHandler;
-  static on(string:"windowDidMove", callback:(window:Window)=>void):EventHandler;
-  static on(string:"windowDidResize", callback:(window:Window)=>void):EventHandler;
-  static on(string:"windowDidMinimize", callback:(window:Window)=>void):EventHandler;
-  static on(string:"windowDidUnminimize", callback:(window:Window)=>void):EventHandler;
-  
+  static set(preferences:{[key:string]:any});  
   static log(message:string);
   static notify(message:string);
-  
-  static after(interval:number, callback:()=>void):TimerHandler; 
-  static every(interval:number, callback:()=>void):TimerHandler;
-  static set(preferences:{[key:string]:any}):void
 }

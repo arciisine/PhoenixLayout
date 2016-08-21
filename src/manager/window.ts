@@ -14,7 +14,7 @@ export default class WindowManager extends BaseItemed<Window> {
   }
   
   sync() {
-    this.syncItems(Window.visibleWindows().filter( w => w.isNormal() )) 
+    this.syncItems(Window.all({visible:true}).filter( w => w.isNormal() )) 
   }
   
   groupItem(w:Window) {

@@ -3,7 +3,7 @@ import {BaseItemed} from './base';
 
 export default class ScreenManager extends BaseItemed<Screen> {
   static buildKey(sc:Screen):string {
-    let rc = sc.frameInRectangle();
+    let rc = sc.frame();
     return `${rc.width}x${rc.height}`
   }
   
@@ -18,8 +18,8 @@ export default class ScreenManager extends BaseItemed<Screen> {
     
   sync() {
     this.log("Attempting to sync displays");
-    this.log(`All: ${Screen.screens().map(x => x.hash()).join(' ')}`)
-    this.syncItems(Screen.screens())
+    this.log(`All: ${Screen.all().map(x => x.hash()).join(' ')}`)
+    this.syncItems(Screen.all())
   }  
   
   onItemAdded(s:Screen) {
