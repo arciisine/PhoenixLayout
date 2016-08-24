@@ -39,7 +39,7 @@ export default class ScreenLayout extends Base {
   }
   
   layout(cls:Classification, windows:Window[]):boolean {
-    let fr = this.screen.visibleFrame();
+    let fr = this.screen.flippedVisibleFrame();
     let dx = fr.width / this.units.width;
     let dy = fr.height / this.units.height;
     let ox = fr.x
