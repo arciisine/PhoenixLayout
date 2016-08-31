@@ -63,7 +63,7 @@ export default class WindowManager extends BaseItemed<Window> {
   
   toggleFullScreen(w:Window = null) {
     if (w === null) {
-      w = Window.focusedWindow();
+      w = Window.focused();
     }
     w.setFullScreen(!w.isFullScreen()) 
   }

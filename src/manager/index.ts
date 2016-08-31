@@ -30,7 +30,7 @@ export default class Manager extends Base {
     this.onPhoenixKey("'",  [Modifier.cmd, Modifier.shift], () => this.windows.toggleFullScreen())
     this.onPhoenixKey("l",  [Modifier.cmd, Modifier.shift], () => this.message(this.layouts.activeName))
     this.onPhoenixKey("\\", [Modifier.cmd, Modifier.shift], () => {
-      let w = Window.focusedWindow()
+      let w = Window.focused()
       this.windows.reclassifyItem(w);
       this.layoutSingle(w)
     });

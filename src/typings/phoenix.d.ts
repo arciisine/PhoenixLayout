@@ -103,7 +103,7 @@ declare type Direction = 'north'|'east'|'west'|'south';
 
 declare class Window implements Identifiable {
 
-  static focusedWindow():Window;
+  static focused():Window;
   static all(optionals?:{visible?:boolean}):Window[];
   static recent():Window[];
 
